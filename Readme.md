@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Dmitriy Tsvetkov](https://up.htmlacademy.ru/ecmascript/16/user/163387).
-* Наставник: `Неизвестно`.
+* Наставник: [Дарья Сюткина](https://htmlacademy.ru/profile/id1960205).
 
 ---
 
