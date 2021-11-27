@@ -6,8 +6,11 @@ import {createUserRankTemplate} from './view/user-rank-view';
 import {createMoviePopupTemplate} from './view/movie-popup-view';
 import {createMoviesCountTemplate} from './view/movies-count-view';
 import {createMovieCommentsTemplate} from './view/movie-comments-view';
+import {generateMovie} from './mock/movie';
 
-const MOVIE_COUNT = 5;
+const MOVIE_COUNT = 17;
+
+const movies = Array.from({length: MOVIE_COUNT}, generateMovie);
 
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
@@ -34,21 +37,23 @@ renderTemplate(siteMainElement, createSiteMenuTemplate(), RenderPosition.AFTER_B
 const movieListContainerElement = createContainer('div', 'films-list__container');
 
 for (let i = 0; i < MOVIE_COUNT; i++) {
-  renderTemplate(movieListContainerElement, createMovieCardTemplate(), RenderPosition.AFTER_BEGIN);
+  renderTemplate(movieListContainerElement, createMovieCardTemplate(movies[i]), RenderPosition.AFTER_BEGIN);
 }
 moviesSectionElement.querySelector('.films-list').appendChild(movieListContainerElement);
 
 renderTemplate(movieListElement, createLoadMoreButtonTemplate(), RenderPosition.BEFORE_END);
 
-movieListExtraElements.forEach((element) => {
+movieListExtraElements.forEach((element, index) => {
   const container = element.querySelector('.films-list__container');
-  renderTemplate(container, createMovieCardTemplate(), RenderPosition.AFTER_BEGIN);
+  renderTemplate(container, createMovieCardTemplate(movies[index]), RenderPosition.AFTER_BEGIN);
 });
 
-renderTemplate(siteFooterElement, createMoviePopupTemplate(), RenderPosition.AFTER_END);
+renderTemplate(siteFooterElement, createMoviePopupTemplate(movies[0]), RenderPosition.AFTER_END);
 
 const filmDetailsBottomContainerElement = document.querySelector('.film-details__bottom-container');
 
 renderTemplate(filmDetailsBottomContainerElement, createMovieCommentsTemplate(), RenderPosition.BEFORE_END);
 
 renderTemplate(footerStatisticsElement, createMoviesCountTemplate(), RenderPosition.AFTER_END);
+
+
