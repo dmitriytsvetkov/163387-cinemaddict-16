@@ -1,5 +1,9 @@
 import dayjs from 'dayjs';
 
+const isGenresMultiple = (array) => array.length > 1;
+
+const createMoviePopupGenreTemplate = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
+
 const createMoviePopupTemplate = (movie) => {
   const {
     title,
@@ -12,12 +16,12 @@ const createMoviePopupTemplate = (movie) => {
     releaseDate,
     duration,
     releaseCountry,
-    genre,
+    genres,
     description,
     ageRating
   } = movie;
   const formattedReleaseDate = dayjs(releaseDate).format('D MMMM YYYY');
-  const genreString = genre.map((element) => `<span class="film-details__genre">${element}</span>`);
+  const genresTemplate = createMoviePopupGenreTemplate(genres);
 
   return `<section class="film-details">
       <form class="film-details__inner" action="" method="get">
@@ -70,9 +74,9 @@ const createMoviePopupTemplate = (movie) => {
                   <td class="film-details__cell">${releaseCountry}</td>
                 </tr>
                 <tr class="film-details__row">
-                  <td class="film-details__term">Genres</td>
+                  <td class="film-details__term">${isGenresMultiple(genres) ? 'Genres' : 'Genre'}</td>
                   <td class="film-details__cell">
-                    ${genreString.join(' ')}
+                    ${genresTemplate}
                 </tr>
               </table>
 

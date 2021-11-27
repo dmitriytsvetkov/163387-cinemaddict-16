@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
 const createMovieCardTemplate = (movie) => {
-  const {title, rating, poster, description, genre, releaseDate, duration, comments} = movie;
+  const {title, rating, poster, description, genres, releaseDate, duration, comments} = movie;
   const releaseYear = dayjs(releaseDate).year();
 
   let trimmedDescription;
@@ -18,7 +18,7 @@ const createMovieCardTemplate = (movie) => {
       <p class="film-card__info">
         <span class="film-card__year">${releaseYear}</span>
         <span class="film-card__duration">${duration}</span>
-        <span class="film-card__genre">${genre[0]}</span>
+        <span class="film-card__genre">${genres[0]}</span>
       </p>
       <img src="./images/posters/${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${trimmedDescription ? trimmedDescription : description}</p>
