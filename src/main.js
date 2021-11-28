@@ -11,6 +11,7 @@ import {generateFilter} from './filter';
 import {renderTemplate, createContainer} from './utils';
 
 const MOVIE_COUNT = 17;
+const MOVIE_COUNT_PER_STEP = 5;
 
 const movies = Array.from({length: MOVIE_COUNT}, generateMovie);
 const filteredMovies = generateFilter(movies);
@@ -29,12 +30,10 @@ renderTemplate(siteMainElement, createSiteMenuTemplate(filteredMovies), RenderPo
 
 const movieListContainerElement = createContainer('div', 'films-list__container');
 
-for (let i = 0; i < MOVIE_COUNT; i++) {
+for (let i = 0; i < Math.min(MOVIE_COUNT, MOVIE_COUNT_PER_STEP); i++) {
   renderTemplate(movieListContainerElement, createMovieCardTemplate(movies[i]), RenderPosition.AFTER_BEGIN);
 }
 moviesSectionElement.querySelector('.films-list').appendChild(movieListContainerElement);
-
-renderTemplate(movieListElement, createLoadMoreButtonTemplate(), RenderPosition.BEFORE_END);
 
 movieListExtraElements.forEach((element, index) => {
   const container = element.querySelector('.films-list__container');
@@ -49,4 +48,25 @@ renderTemplate(filmDetailsBottomContainerElement, createMovieCommentsTemplate(),
 
 renderTemplate(footerStatisticsElement, createMoviesCountTemplate(), RenderPosition.AFTER_END);
 
+if (movies.length > MOVIE_COUNT_PER_STEP) {
+  let renderedMoviesCount = MOVIE_COUNT_PER_STEP;
+
+  renderTemplate(movieListElement, createLoadMoreButtonTemplate(), RenderPosition.BEFORE_END);
+
+  const loadMoreButton = document.querySelector('.films-list__show-more');
+
+  loadMoreButton.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    movies.slice(renderedMoviesCount, renderedMoviesCount + MOVIE_COUNT_PER_STEP)
+      .forEach((movie) => {
+        renderTemplate(movieListContainerElement, createMovieCardTemplate(movie), RenderPosition.AFTER_BEGIN);
+      });
+
+    renderedMoviesCount += MOVIE_COUNT_PER_STEP;
+
+    if (renderedMoviesCount >= movies.length) {
+      loadMoreButton.remove();
+    }
+  });
+}
 
