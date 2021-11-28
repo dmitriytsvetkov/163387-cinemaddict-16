@@ -6,7 +6,7 @@ import {createUserRankTemplate} from './view/user-rank-view';
 import {createMoviePopupTemplate} from './view/movie-popup-view';
 import {createMoviesCountTemplate} from './view/movies-count-view';
 import {createMovieCommentsTemplate} from './view/movie-comments-view';
-import {generateMovie} from './mock/movie';
+import {generateMovie, generateComment} from './mock/movie';
 import {generateFilter} from './filter';
 import {renderTemplate, createContainer} from './utils';
 
@@ -15,6 +15,12 @@ const MOVIE_COUNT_PER_STEP = 5;
 
 const movies = Array.from({length: MOVIE_COUNT}, generateMovie);
 const filteredMovies = generateFilter(movies);
+
+const commentsList = [];
+
+movies.map((movie, index) => {
+  commentsList.push(generateComment(index));
+});
 
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
@@ -30,8 +36,8 @@ renderTemplate(siteMainElement, createSiteMenuTemplate(filteredMovies), RenderPo
 
 const movieListContainerElement = createContainer('div', 'films-list__container');
 
-for (let i = 0; i < Math.min(MOVIE_COUNT, MOVIE_COUNT_PER_STEP); i++) {
-  renderTemplate(movieListContainerElement, createMovieCardTemplate(movies[i]), RenderPosition.AFTER_BEGIN);
+for (let i = 0; i < Math.min(movies.length, MOVIE_COUNT_PER_STEP); i++) {
+  renderTemplate(movieListContainerElement, createMovieCardTemplate(movies[i]), RenderPosition.BEFORE_END);
 }
 moviesSectionElement.querySelector('.films-list').appendChild(movieListContainerElement);
 
@@ -44,7 +50,7 @@ renderTemplate(siteFooterElement, createMoviePopupTemplate(movies[0]), RenderPos
 
 const filmDetailsBottomContainerElement = document.querySelector('.film-details__bottom-container');
 
-renderTemplate(filmDetailsBottomContainerElement, createMovieCommentsTemplate(), RenderPosition.BEFORE_END);
+renderTemplate(filmDetailsBottomContainerElement, createMovieCommentsTemplate(movies[0], commentsList), RenderPosition.BEFORE_END);
 
 renderTemplate(footerStatisticsElement, createMoviesCountTemplate(), RenderPosition.AFTER_END);
 

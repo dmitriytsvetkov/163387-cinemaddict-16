@@ -1,24 +1,7 @@
 import dayjs from 'dayjs';
-import {getRandomArray, getRandomArrayElement, getRandomInteger, getRandomFloat} from '../utils';
+import {getRandomArray, getRandomArrayElement, getRandomInteger, getRandomFloat, getRandomUniqueArray} from '../utils';
 
-const comments = [
-  {
-    id: 1,
-    text: 'Interesting setting and a good cast',
-    date: '2019/12/31 23:59',
-    author: 'Tim Macoveev',
-    emoji: 'smile.png'
-  },
-  {
-    id: 5,
-    text: 'Super film',
-    date: '2019/12/31 23:59',
-    author: 'John Doe',
-    emoji: 'angry.png'
-  }
-];
-
-const generateComments = () => [[comments[0].id], [comments[1].id]];
+const generateRandomCommentsIds = () => getRandomUniqueArray(10, getRandomInteger(0, 5));
 
 const generateDescription = () => {
   const descriptions = [
@@ -150,10 +133,51 @@ const generateMovie = () => ({
   genres: generateGenres(),
   description: generateDescription(),
   ageRating: generateAgeRating(),
-  comments: generateComments(),
+  comments: generateRandomCommentsIds(),
   isInWatchlist: Boolean(getRandomInteger()),
   isFavorite: Boolean(getRandomInteger()),
   isWatched: Boolean(getRandomInteger()),
 });
 
-export {generateMovie};
+const generateCommentText = () => {
+  const comments = [
+    'Interesting setting and a good cast',
+    'Booooooooooring',
+    'Very very old. Meh',
+    'Almost two hours? Seriously?',
+  ];
+
+  return getRandomArrayElement(comments);
+};
+
+const generateAuthorName = () => {
+  const names = [
+    'Michael Jackson',
+    'John Doe',
+    'Jack Black',
+    'Ace Ventura',
+  ];
+
+  return getRandomArrayElement(names);
+};
+
+const generateEmoji = () => {
+  const emojiList = [
+    'smile',
+    'sleeping',
+    'puke',
+    'angry',
+  ];
+
+  return getRandomArrayElement(emojiList);
+};
+
+const generateComment = (id) => ({
+  id: id,
+  text: generateCommentText(),
+  date: generateDate(),
+  author: generateAuthorName(),
+  emoji: generateEmoji(),
+});
+
+export {generateMovie, generateComment};
