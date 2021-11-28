@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -22,4 +24,16 @@ const getRandomArray = ([...source], maxLength) => Array.from(
   () => source.splice(Math.random() * source.length | 0, 1)[0],
 );
 
-export {getRandomArrayElement, getRandomArray, getRandomInteger, getRandomFloat};
+const getFormattedDate = (date, formatString) => dayjs(date).format(formatString);
+
+const renderTemplate = (container, template, position) => {
+  container.insertAdjacentHTML(position, template);
+};
+
+const createContainer = (tagName, className) => {
+  const result = document.createElement(tagName);
+  result.classList.add(className);
+  return result;
+};
+
+export {getRandomArrayElement, getRandomArray, getRandomInteger, getRandomFloat, getFormattedDate, renderTemplate, createContainer};

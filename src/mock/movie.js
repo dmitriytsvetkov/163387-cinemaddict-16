@@ -150,7 +150,10 @@ const generateMovie = () => ({
   genres: generateGenres(),
   description: generateDescription(),
   ageRating: generateAgeRating(),
-  comments: generateComments()
+  comments: generateComments(),
+  isInWatchlist: Boolean(getRandomInteger()),
+  isFavorite: Boolean(getRandomInteger()),
+  isWatched: Boolean(getRandomInteger()),
 });
 
 export {generateMovie};

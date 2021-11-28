@@ -7,10 +7,13 @@ import {createMoviePopupTemplate} from './view/movie-popup-view';
 import {createMoviesCountTemplate} from './view/movies-count-view';
 import {createMovieCommentsTemplate} from './view/movie-comments-view';
 import {generateMovie} from './mock/movie';
+import {generateFilter} from './filter';
+import {renderTemplate, createContainer} from './utils';
 
 const MOVIE_COUNT = 17;
 
 const movies = Array.from({length: MOVIE_COUNT}, generateMovie);
+const filteredMovies = generateFilter(movies);
 
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
@@ -20,19 +23,9 @@ const movieListElement = document.querySelector('.films-list');
 const movieListExtraElements = document.querySelectorAll('.films-list--extra');
 const footerStatisticsElement = siteFooterElement.querySelector('.footer__statistics');
 
-const renderTemplate = (container, template, position) => {
-  container.insertAdjacentHTML(position, template);
-};
-
-const createContainer = (tagName, className) => {
-  const result = document.createElement(tagName);
-  result.classList.add(className);
-  return result;
-};
-
 renderTemplate(siteHeaderElement, createUserRankTemplate(), RenderPosition.BEFORE_END);
 
-renderTemplate(siteMainElement, createSiteMenuTemplate(), RenderPosition.AFTER_BEGIN);
+renderTemplate(siteMainElement, createSiteMenuTemplate(filteredMovies), RenderPosition.AFTER_BEGIN);
 
 const movieListContainerElement = createContainer('div', 'films-list__container');
 

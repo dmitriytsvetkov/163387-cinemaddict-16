@@ -1,8 +1,25 @@
-import dayjs from 'dayjs';
+import {getFormattedDate} from '../utils';
+import {CARD_BUTTON_ACTIVE_CLASS_NAME} from '../constants';
 
 const createMovieCardTemplate = (movie) => {
-  const {title, rating, poster, description, genres, releaseDate, duration, comments} = movie;
-  const releaseYear = dayjs(releaseDate).year();
+  const {
+    title,
+    rating,
+    poster,
+    description,
+    genres,
+    releaseDate,
+    duration,
+    comments,
+    isFavorite,
+    isWatched,
+    isInWatchlist,
+  } = movie;
+  const releaseYear = getFormattedDate(releaseDate, 'YYYY');
+
+  const favoriteClassName = isFavorite ? CARD_BUTTON_ACTIVE_CLASS_NAME : '';
+  const alreadyWatchedClassName = isWatched ? CARD_BUTTON_ACTIVE_CLASS_NAME : '';
+  const inWatchListClassName = isInWatchlist ? CARD_BUTTON_ACTIVE_CLASS_NAME : '';
 
   let trimmedDescription;
 
@@ -25,9 +42,9 @@ const createMovieCardTemplate = (movie) => {
       <span class="film-card__comments">${comments.length} comments</span>
     </a>
     <div class="film-card__controls">
-      <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
-      <button class="film-card__controls-item film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
-      <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
+      <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${inWatchListClassName}" type="button">Add to watchlist</button>
+      <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${alreadyWatchedClassName}" type="button">Mark as watched</button>
+      <button class="film-card__controls-item film-card__controls-item--favorite ${favoriteClassName}" type="button">Mark as favorite</button>
     </div>
   </article>`;
 };

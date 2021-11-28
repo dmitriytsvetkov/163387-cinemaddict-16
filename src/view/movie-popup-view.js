@@ -1,4 +1,5 @@
-import dayjs from 'dayjs';
+import {getFormattedDate} from '../utils';
+import {POPUP_BUTTON_ACTIVE_CLASS_NAME} from '../constants';
 
 const isGenresMultiple = (array) => array.length > 1;
 
@@ -18,10 +19,17 @@ const createMoviePopupTemplate = (movie) => {
     releaseCountry,
     genres,
     description,
-    ageRating
+    ageRating,
+    isFavorite,
+    isInWatchlist,
+    isWatched,
   } = movie;
-  const formattedReleaseDate = dayjs(releaseDate).format('D MMMM YYYY');
+  const formattedReleaseDate = getFormattedDate(releaseDate, 'D MMMM YYYY');
   const genresTemplate = createMoviePopupGenreTemplate(genres);
+
+  const favoriteClassName = isFavorite ? POPUP_BUTTON_ACTIVE_CLASS_NAME : '';
+  const alreadyWatchedClassName = isWatched ? POPUP_BUTTON_ACTIVE_CLASS_NAME : '';
+  const inWatchListClassName = isInWatchlist ? POPUP_BUTTON_ACTIVE_CLASS_NAME : '';
 
   return `<section class="film-details">
       <form class="film-details__inner" action="" method="get">
@@ -87,9 +95,9 @@ const createMoviePopupTemplate = (movie) => {
           </div>
 
           <section class="film-details__controls">
-            <button type="button" class="film-details__control-button film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-            <button type="button" class="film-details__control-button film-details__control-button--active film-details__control-button--watched" id="watched" name="watched">Already watched</button>
-            <button type="button" class="film-details__control-button film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
+            <button type="button" class="film-details__control-button film-details__control-button--watchlist ${inWatchListClassName}" id="watchlist" name="watchlist">Add to watchlist</button>
+            <button type="button" class="film-details__control-button film-details__control-button--watched ${alreadyWatchedClassName}" id="watched" name="watched">Already watched</button>
+            <button type="button" class="film-details__control-button film-details__control-button--favorite ${favoriteClassName}" id="favorite" name="favorite">Add to favorites</button>
           </section>
         </div>
 
