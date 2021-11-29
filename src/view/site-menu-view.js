@@ -1,4 +1,6 @@
-const createSiteMenuNavigationTemplate = (filteredMovies) => filteredMovies.map((filteredMovie) => `<a href="#${filteredMovie.name}" class="main-navigation__item">${filteredMovie.name} <span class="main-navigation__item-count">${filteredMovie.count}</span></a>`);
+const createSiteMenuNavigationTemplate = (filteredMovies) => filteredMovies.map((filteredMovie) => (
+  `<a href="#${filteredMovie.name}" class="main-navigation__item">${filteredMovie.name} <span class="main-navigation__item-count">${filteredMovie.count}</span></a>`
+));
 
 const createSiteMenuTemplate = (filteredMovies) => {
   const filteredMoviesMenuTemplate = createSiteMenuNavigationTemplate(filteredMovies).join('');

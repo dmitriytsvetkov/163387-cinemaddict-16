@@ -7,14 +7,14 @@ import {createMoviePopupTemplate} from './view/movie-popup-view';
 import {createMoviesCountTemplate} from './view/movies-count-view';
 import {createMovieCommentsTemplate} from './view/movie-comments-view';
 import {generateMovie, generateComment} from './mock/movie';
-import {generateFilter} from './filter';
+import {generateMoviesFilter} from './filter';
 import {renderTemplate, createContainer} from './utils';
 
 const MOVIE_COUNT = 17;
 const MOVIE_COUNT_PER_STEP = 5;
 
 const movies = Array.from({length: MOVIE_COUNT}, generateMovie);
-const filteredMovies = generateFilter(movies);
+const filteredMovies = generateMoviesFilter(movies);
 
 const commentsList = [];
 

@@ -40,7 +40,9 @@ const getRandomUniqueArray = (maxValue, length) => {
   const arr = [];
   while(arr.length < length){
     const r = Math.floor(Math.random() * maxValue) + 1;
-    if(arr.indexOf(r) === -1) {arr.push(r);}
+    if(arr.indexOf(r) === -1) {
+      arr.push(r);
+    }
   }
   return arr;
 };
