@@ -26,12 +26,6 @@ const getRandomArray = ([...source], maxLength) => Array.from(
 
 const getFormattedDate = (date, formatString) => dayjs(date).format(formatString);
 
-const createContainer = (tagName, className) => {
-  const result = document.createElement(tagName);
-  result.classList.add(className);
-  return result;
-};
-
 const getRandomUniqueArray = (maxValue, length) => {
   const arr = [];
   while(arr.length < length){
@@ -43,4 +37,4 @@ const getRandomUniqueArray = (maxValue, length) => {
   return arr;
 };
 
-export {getRandomArrayElement, getRandomArray, getRandomInteger, getRandomFloat, getFormattedDate, createContainer, getRandomUniqueArray};
+export {getRandomArrayElement, getRandomArray, getRandomInteger, getRandomFloat, getFormattedDate, getRandomUniqueArray};
