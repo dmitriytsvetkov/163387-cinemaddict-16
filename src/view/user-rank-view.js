@@ -1,3 +1,5 @@
+import {createElement} from '../render';
+
 const createUserRankTemplate = () => (
   `<section class="header__profile profile">
     <p class="profile__rating">Movie Buff</p>
@@ -5,4 +7,24 @@ const createUserRankTemplate = () => (
   </section>`
 );
 
-export {createUserRankTemplate};
+class UserRankView {
+  #element = null;
+
+  get element () {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createUserRankTemplate();
+  }
+
+  removeElement = () => {
+    this.#element = null;
+  }
+}
+
+export {UserRankView};
