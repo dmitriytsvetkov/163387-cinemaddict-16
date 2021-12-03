@@ -15,7 +15,7 @@ const createSiteMenuTemplate = (filteredMovies) => {
   </nav>`;
 };
 
-class SiteMenuView {
+export default class SiteMenuView {
   #element = null;
   #filteredMovies = null;
 
@@ -39,5 +39,3 @@ class SiteMenuView {
     this.#element = null;
   }
 }
-
-export {SiteMenuView};

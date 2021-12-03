@@ -50,7 +50,7 @@ const createMovieCardTemplate = (movie) => {
   </article>`;
 };
 
-class MovieCardView {
+export default class MovieCardView {
   #element = null;
   #movie = null;
 
@@ -74,5 +74,3 @@ class MovieCardView {
     this.#element = null;
   }
 }
-
-export {MovieCardView};

@@ -7,7 +7,7 @@ const createUserRankTemplate = () => (
   </section>`
 );
 
-class UserRankView {
+export default class UserRankView {
   #element = null;
 
   get element () {
@@ -26,5 +26,3 @@ class UserRankView {
     this.#element = null;
   }
 }
-
-export {UserRankView};

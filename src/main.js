@@ -1,12 +1,12 @@
 import {render, RenderPosition} from './render';
-import {MovieCardView} from './view/movie-card-view';
-import {MovieListView} from './view/movie-list.view';
-import {SiteMenuView} from './view/site-menu-view';
-import {LoadMoreButtonView} from './view/load-more-button-view';
-import {UserRankView} from './view/user-rank-view';
-import {MoviePopupView} from './view/movie-popup-view';
-import {MoviesCountView} from './view/movies-count-view';
-import {MovieCommentsView} from './view/movie-comments-view';
+import MovieCardView from './view/movie-card-view';
+import MovieListView from './view/movie-list.view';
+import SiteMenuView from './view/site-menu-view';
+import LoadMoreButtonView from './view/load-more-button-view';
+import UserRankView from './view/user-rank-view';
+import MoviePopupView from './view/movie-popup-view';
+import MoviesCountView from './view/movies-count-view';
+import MovieCommentsView from './view/movie-comments-view';
 import {generateMovie, generateComment} from './mock/movie';
 import {generateMoviesFilter} from './filter';
 

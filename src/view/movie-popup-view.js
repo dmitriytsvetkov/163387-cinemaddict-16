@@ -108,7 +108,7 @@ const createMoviePopupTemplate = (movie) => {
     </section>`;
 };
 
-class MoviePopupView {
+export default class MoviePopupView {
   #element = null;
   #movie = null;
 
@@ -132,5 +132,3 @@ class MoviePopupView {
     this.#element = null;
   }
 }
-
-export {MoviePopupView};

@@ -2,7 +2,7 @@ import {createElement} from '../render';
 
 const createLoadMoreButtonTemplate = () => '<button class="films-list__show-more">Show more</button>';
 
-class LoadMoreButtonView {
+export default class LoadMoreButtonView {
   #element = null;
 
   get element () {
@@ -21,5 +21,3 @@ class LoadMoreButtonView {
     this.#element = null;
   }
 }
-
-export {LoadMoreButtonView};

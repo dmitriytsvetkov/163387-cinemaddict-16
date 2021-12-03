@@ -2,7 +2,7 @@ import {createElement} from '../render';
 
 const createMovieListTemplate = () => '<div class="films-list__container"></div>';
 
-class MovieListView {
+export default class MovieListView {
   #element = null;
 
   get element() {
@@ -21,5 +21,3 @@ class MovieListView {
     this.#element = null;
   }
 }
-
-export {MovieListView};

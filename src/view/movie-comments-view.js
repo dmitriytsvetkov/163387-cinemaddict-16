@@ -60,7 +60,7 @@ const createMovieCommentsTemplate = (movie, commentsList) => {
           </section>`;
 };
 
-class MovieCommentsView {
+export default class MovieCommentsView {
   #element = null;
   #movie = null;
   #comments = null;
@@ -86,5 +86,3 @@ class MovieCommentsView {
     this.#element = null;
   }
 }
-
-export {MovieCommentsView};
