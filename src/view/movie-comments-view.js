@@ -1,4 +1,5 @@
 import {getFormattedDate} from '../utils';
+import {createElement} from '../render';
 
 const createRepeatingCommentTemplate = (comments) => comments.map(({author, date, emoji, text}) => `<li class="film-details__comment">
   <span class="film-details__comment-emoji">
@@ -59,4 +60,29 @@ const createMovieCommentsTemplate = (movie, commentsList) => {
           </section>`;
 };
 
-export {createMovieCommentsTemplate};
+export default class MovieCommentsView {
+  #element = null;
+  #movie = null;
+  #comments = null;
+
+  constructor(movie, comments) {
+    this.#movie = movie;
+    this.#comments = comments;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createMovieCommentsTemplate(this.#movie, this.#comments);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

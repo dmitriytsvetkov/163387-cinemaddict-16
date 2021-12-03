@@ -1,3 +1,5 @@
+import {createElement} from '../render';
+
 const createSiteMenuNavigationTemplate = (filteredMovies) => filteredMovies.map((filteredMovie) => (
   `<a href="#${filteredMovie.name}" class="main-navigation__item">${filteredMovie.name} <span class="main-navigation__item-count">${filteredMovie.count}</span></a>`
 ));
@@ -13,4 +15,27 @@ const createSiteMenuTemplate = (filteredMovies) => {
   </nav>`;
 };
 
-export {createSiteMenuTemplate};
+export default class SiteMenuView {
+  #element = null;
+  #filteredMovies = null;
+
+  constructor(filteredMovies) {
+    this.#filteredMovies = filteredMovies;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createSiteMenuTemplate(this.#filteredMovies);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

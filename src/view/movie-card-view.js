@@ -1,5 +1,6 @@
 import {getFormattedDate} from '../utils';
 import {CARD_BUTTON_ACTIVE_CLASS_NAME} from '../constants';
+import {createElement} from '../render';
 
 const createMovieCardTemplate = (movie) => {
   const {
@@ -49,4 +50,27 @@ const createMovieCardTemplate = (movie) => {
   </article>`;
 };
 
-export {createMovieCardTemplate};
+export default class MovieCardView {
+  #element = null;
+  #movie = null;
+
+  constructor(movie) {
+    this.#movie = movie;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createMovieCardTemplate(this.#movie);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

@@ -1,5 +1,6 @@
 import {getFormattedDate} from '../utils';
 import {POPUP_BUTTON_ACTIVE_CLASS_NAME} from '../constants';
+import {createElement} from '../render';
 
 const isGenresMultiple = (array) => array.length > 1;
 
@@ -107,4 +108,27 @@ const createMoviePopupTemplate = (movie) => {
     </section>`;
 };
 
-export {createMoviePopupTemplate};
+export default class MoviePopupView {
+  #element = null;
+  #movie = null;
+
+  constructor(movie) {
+    this.#movie = movie;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createMoviePopupTemplate(this.#movie, this.#movie);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
