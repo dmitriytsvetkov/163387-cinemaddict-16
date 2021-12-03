@@ -37,7 +37,7 @@ const renderMovie = (container, movie) => {
   const showPopup = () => {
     render(siteFooterElement, moviePopupComponent.element, RenderPosition.AFTER_END);
     const filmDetailsBottomContainerElement = document.querySelector('.film-details__bottom-container');
-    render(filmDetailsBottomContainerElement, new MovieCommentsView(movies[0], commentsList).element, RenderPosition.BEFORE_END);
+    render(filmDetailsBottomContainerElement, new MovieCommentsView(movie, commentsList).element, RenderPosition.BEFORE_END);
   };
 
   const hidePopup = () => {
