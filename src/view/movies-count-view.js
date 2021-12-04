@@ -1,9 +1,14 @@
 import {createElement} from '../render';
 
-const createMoviesCountTemplate = () => '<p>130 291 movies inside</p>';
+const createMoviesCountTemplate = (moviesCount) => `<p>${moviesCount} movies inside</p>`;
 
 export default class MoviesCountView {
   #element = null;
+  #moviesCount = null;
+
+  constructor(moviesCount) {
+    this.#moviesCount = moviesCount;
+  }
 
   get element() {
     if (!this.#element) {
@@ -14,6 +19,6 @@ export default class MoviesCountView {
   }
 
   get template() {
-    return createMoviesCountTemplate();
+    return createMoviesCountTemplate(this.#moviesCount);
   }
 }
