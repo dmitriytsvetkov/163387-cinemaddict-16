@@ -55,13 +55,13 @@ const renderMovie = (container, movie) => {
     }
   };
 
-  movieComponent.element.addEventListener('click', () => {
+  movieComponent.setEditClickHandler(() => {
     siteBodyElement.classList.add('hide-overflow');
     showPopup();
     document.addEventListener('keydown', onEscKeyKeyDown);
   });
 
-  moviePopupComponent.element.querySelector('.film-details__close-btn').addEventListener('click', () => {
+  moviePopupComponent.setClosePopupClickHandler(() => {
     hidePopup();
     document.removeEventListener('keydown', onEscKeyKeyDown);
   });
@@ -87,14 +87,13 @@ const renderMoviesBoard = () => {
     });
 
     if (movies.length > MOVIE_COUNT_PER_STEP) {
-      render(movieListContainer, new LoadMoreButtonView().element, RenderPosition.BEFORE_END);
+      const loadMoreButtonComponent = new LoadMoreButtonView();
+      render(movieListContainer, loadMoreButtonComponent.element, RenderPosition.BEFORE_END);
 
       let renderedMoviesCount = MOVIE_COUNT_PER_STEP;
 
-      const loadMoreButton = document.querySelector('.films-list__show-more');
 
-      loadMoreButton.addEventListener('click', (evt) => {
-        evt.preventDefault();
+      loadMoreButtonComponent.setLoadMoreClickHandler(() => {
         movies.slice(renderedMoviesCount, renderedMoviesCount + MOVIE_COUNT_PER_STEP)
           .forEach((movie) => {
             renderMovie(movieListComponent.element, movie);
@@ -103,7 +102,7 @@ const renderMoviesBoard = () => {
         renderedMoviesCount += MOVIE_COUNT_PER_STEP;
 
         if (renderedMoviesCount >= movies.length) {
-          loadMoreButton.remove();
+          loadMoreButtonComponent.element.remove();
         }
       });
     }
