@@ -1,4 +1,4 @@
-import {getFormattedDate} from '../utils';
+import {getFormattedDate} from '../utils/movie-utils';
 import {CARD_BUTTON_ACTIVE_CLASS_NAME} from '../constants';
 import AbstractView from './abstract-view';
 

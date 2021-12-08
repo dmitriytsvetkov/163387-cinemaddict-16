@@ -1,10 +1,10 @@
-import {createElement} from '../render';
+import {createElement} from '../utils/render';
 
 export default class AbstractView {
   #element = null;
   _callback = {}
 
-  constructor() {
+  constructor () {
     if (new.target === AbstractView) {
       throw new Error('Can\'t instantiate AbstractView, only concrete one.');
     }

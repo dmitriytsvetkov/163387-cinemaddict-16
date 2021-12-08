@@ -1,5 +1,3 @@
-import dayjs from 'dayjs';
-
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -24,8 +22,6 @@ const getRandomArray = ([...source], maxLength) => Array.from(
   () => source.splice(Math.random() * source.length | 0, 1)[0],
 );
 
-const getFormattedDate = (date, formatString) => dayjs(date).format(formatString);
-
 const getRandomUniqueArray = (maxValue, length) => {
   const arr = [];
   while(arr.length < length){
@@ -37,4 +33,4 @@ const getRandomUniqueArray = (maxValue, length) => {
   return arr;
 };
 
-export {getRandomArrayElement, getRandomArray, getRandomInteger, getRandomFloat, getFormattedDate, getRandomUniqueArray};
+export {getRandomArrayElement, getRandomArray, getRandomInteger, getRandomFloat, getRandomUniqueArray};

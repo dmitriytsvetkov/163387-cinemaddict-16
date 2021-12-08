@@ -1,4 +1,4 @@
-import {getFormattedDate} from '../utils';
+import {getFormattedDate} from '../utils/movie-utils';
 import AbstractView from './abstract-view';
 
 const createRepeatingCommentTemplate = (comments) => comments.map(({author, date, emoji, text}) => `<li class="film-details__comment">
