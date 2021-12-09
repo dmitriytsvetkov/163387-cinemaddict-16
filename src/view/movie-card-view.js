@@ -1,6 +1,6 @@
-import {getFormattedDate} from '../utils';
+import {getFormattedDate} from '../utils/movie-utils';
 import {CARD_BUTTON_ACTIVE_CLASS_NAME} from '../constants';
-import {createElement} from '../render';
+import AbstractView from './abstract-view';
 
 const createMovieCardTemplate = (movie) => {
   const {
@@ -50,27 +50,25 @@ const createMovieCardTemplate = (movie) => {
   </article>`;
 };
 
-export default class MovieCardView {
-  #element = null;
+export default class MovieCardView extends AbstractView {
   #movie = null;
 
   constructor(movie) {
+    super();
     this.#movie = movie;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createMovieCardTemplate(this.#movie);
   }
 
-  removeElement() {
-    this.#element = null;
+  setEditClickHandler = (callback) => {
+    this._callback.editClick = callback;
+    this.element.addEventListener('click', this.#editClickHandler);
+  }
+
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.editClick();
   }
 }

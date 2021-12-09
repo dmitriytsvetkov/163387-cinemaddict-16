@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {getRandomArray, getRandomArrayElement, getRandomInteger, getRandomFloat, getRandomUniqueArray} from '../utils';
+import {getRandomArray, getRandomArrayElement, getRandomInteger, getRandomFloat, getRandomUniqueArray} from '../utils/common';
 
 const generateRandomCommentsIds = () => getRandomUniqueArray(10, getRandomInteger(0, 5));
 

@@ -1,6 +1,6 @@
-import {getFormattedDate} from '../utils';
+import {getFormattedDate} from '../utils/movie-utils';
 import {POPUP_BUTTON_ACTIVE_CLASS_NAME} from '../constants';
-import {createElement} from '../render';
+import AbstractView from './abstract-view';
 
 const isGenresMultiple = (array) => array.length > 1;
 
@@ -108,27 +108,25 @@ const createMoviePopupTemplate = (movie) => {
     </section>`;
 };
 
-export default class MoviePopupView {
-  #element = null;
+export default class MoviePopupView extends AbstractView {
   #movie = null;
 
   constructor(movie) {
+    super();
     this.#movie = movie;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createMoviePopupTemplate(this.#movie, this.#movie);
   }
 
-  removeElement() {
-    this.#element = null;
+  setClosePopupClickHandler = (callback) => {
+    this._callback.editClick = callback;
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closePopupClickHandler);
+  }
+
+  #closePopupClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.editClick();
   }
 }

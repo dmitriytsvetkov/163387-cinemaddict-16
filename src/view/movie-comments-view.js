@@ -1,5 +1,5 @@
-import {getFormattedDate} from '../utils';
-import {createElement} from '../render';
+import {getFormattedDate} from '../utils/movie-utils';
+import AbstractView from './abstract-view';
 
 const createRepeatingCommentTemplate = (comments) => comments.map(({author, date, emoji, text}) => `<li class="film-details__comment">
   <span class="film-details__comment-emoji">
@@ -60,29 +60,17 @@ const createMovieCommentsTemplate = (movie, commentsList) => {
           </section>`;
 };
 
-export default class MovieCommentsView {
-  #element = null;
+export default class MovieCommentsView extends AbstractView {
   #movie = null;
   #comments = null;
 
   constructor(movie, comments) {
+    super();
     this.#movie = movie;
     this.#comments = comments;
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
   get template() {
     return createMovieCommentsTemplate(this.#movie, this.#comments);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

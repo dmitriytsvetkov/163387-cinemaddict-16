@@ -1,4 +1,4 @@
-import {createElement} from '../render';
+import AbstractView from './abstract-view';
 
 const createSiteMenuNavigationTemplate = (filteredMovies) => filteredMovies.map((filteredMovie) => (
   `<a href="#${filteredMovie.name}" class="main-navigation__item">${filteredMovie.name} <span class="main-navigation__item-count">${filteredMovie.count}</span></a>`
@@ -15,27 +15,15 @@ const createSiteMenuTemplate = (filteredMovies) => {
   </nav>`;
 };
 
-export default class SiteMenuView {
-  #element = null;
+export default class SiteMenuView extends AbstractView {
   #filteredMovies = null;
 
   constructor(filteredMovies) {
+    super();
     this.#filteredMovies = filteredMovies;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createSiteMenuTemplate(this.#filteredMovies);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
