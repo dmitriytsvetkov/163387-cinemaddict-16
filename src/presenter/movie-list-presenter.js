@@ -1,5 +1,6 @@
 import MoviesSectionView from '../view/movies-section-view';
 import MovieListView from '../view/movie-list-view';
+import MovieListExtraView from '../view/movie-list-extra-view';
 import {remove, render, RenderPosition} from '../utils/render';
 import NoMoviesView from '../view/no-movies-view';
 import LoadMoreButtonView from '../view/load-more-button-view';
@@ -38,14 +39,14 @@ export default class MovieListPresenter {
     render(this.#container, this.#moviesSectionComponent, RenderPosition.BEFORE_END);
     render(this.#moviesSectionComponent, this.#movieListComponent, RenderPosition.BEFORE_END);
 
-    this.#renderMovieList();
+    this.#renderBoard();
   }
 
   #renderSort = () => {
     render(this.#container, new SortView(), RenderPosition.AFTER_BEGIN);
   }
 
-  #renderMovie = (movie) => {
+  #renderMovie = (movie, container) => {
     const movieComponent = new MovieCardView(movie);
     const moviePopupComponent = new MoviePopupView(movie);
 
@@ -79,17 +80,17 @@ export default class MovieListPresenter {
       document.removeEventListener('keydown', onEscKeyKeyDown);
     });
 
-    render(this.#movieListContainerComponent, movieComponent, RenderPosition.BEFORE_END);
+    render(container, movieComponent, RenderPosition.BEFORE_END);
   }
 
   #renderNoMovies = () => {
     render(this.#movieListComponent, new NoMoviesView(), RenderPosition.BEFORE_END);
   }
 
-  #renderMovies = (from, to) => {
+  #renderMovies = (from, to, container) => {
     this.#movies
       .slice(from, to)
-      .forEach((movie) => this.#renderMovie(movie));
+      .forEach((movie) => this.#renderMovie(movie, container));
   }
 
   #renderShowMoreButton = () => {
@@ -99,7 +100,7 @@ export default class MovieListPresenter {
     let renderedMoviesCount = MOVIE_COUNT_PER_STEP;
 
     this.#loadMoreButtonComponent.setLoadMoreClickHandler(() => {
-      this.#movies.slice(renderedMoviesCount, renderedMoviesCount + MOVIE_COUNT_PER_STEP).forEach((movie) => this.#renderMovie(movie));
+      this.#movies.slice(renderedMoviesCount, renderedMoviesCount + MOVIE_COUNT_PER_STEP).forEach((movie) => this.#renderMovie(movie, this.#movieListContainerComponent));
 
       renderedMoviesCount += MOVIE_COUNT_PER_STEP;
 
@@ -110,18 +111,26 @@ export default class MovieListPresenter {
   }
 
   #renderTopRatedMovie = () => {
-
+    const movieListExtraComponent = new MovieListExtraView('Top rated');
+    render(this.#moviesSectionComponent, movieListExtraComponent, RenderPosition.BEFORE_END);
+    const movieListContainerComponent = new MovieListContainerView();
+    render(movieListExtraComponent, movieListContainerComponent, RenderPosition.BEFORE_END);
+    this.#renderMovies(0, Math.min(this.#movies.length, 2), movieListContainerComponent);
   }
 
   #renderMostCommentedMovie = () => {
-
+    const movieListExtraComponent = new MovieListExtraView('Most commented');
+    render(this.#moviesSectionComponent, movieListExtraComponent, RenderPosition.BEFORE_END);
+    const movieListContainerComponent = new MovieListContainerView();
+    render(movieListExtraComponent, movieListContainerComponent, RenderPosition.BEFORE_END);
+    this.#renderMovies(0, Math.min(this.#movies.length, 2), movieListContainerComponent);
   }
 
   #renderMovieCountStatistic = () => {
     render(this.#footerStatisticsElement, new MoviesCountView(this.#movies.length), RenderPosition.AFTER_END);
   }
 
-  #renderMovieList = () => {
+  #renderBoard = () => {
     if (!this.#movies.length) {
       this.#renderNoMovies();
       return;
@@ -131,12 +140,10 @@ export default class MovieListPresenter {
 
     render(this.#movieListComponent, this.#movieListContainerComponent, RenderPosition.BEFORE_END);
 
-    this.#renderMovies(0, Math.min(this.#movies.length, MOVIE_COUNT_PER_STEP));
+    this.#renderMovies(0, Math.min(this.#movies.length, MOVIE_COUNT_PER_STEP), this.#movieListContainerComponent);
 
-    /*movieListExtraElements.forEach((element, index) => {
-      const container = element.querySelector('.films-list__container');
-      renderMovie(container, movies[index]);
-    });*/
+    this.#renderTopRatedMovie();
+    this.#renderMostCommentedMovie();
 
     if (this.#movies.length > MOVIE_COUNT_PER_STEP) {
       this.#renderShowMoreButton();
