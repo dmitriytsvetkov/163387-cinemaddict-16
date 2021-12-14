@@ -64,7 +64,7 @@ export default class MovieCardView extends AbstractView {
 
   setEditClickHandler = (callback) => {
     this._callback.editClick = callback;
-    this.element.addEventListener('click', this.#editClickHandler);
+    this.element.querySelector('.film-card__link').addEventListener('click', this.#editClickHandler);
   }
 
   #editClickHandler = (evt) => {
