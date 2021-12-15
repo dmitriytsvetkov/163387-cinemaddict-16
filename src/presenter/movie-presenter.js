@@ -9,7 +9,7 @@ export default class MoviePresenter {
 
   #movieComponent = null;
   #moviePopupComponent = null;
-  #movieCommentsComponent
+  #movieCommentsComponent = null;
 
   #siteBodyElement = document.querySelector('body');
 
@@ -26,7 +26,8 @@ export default class MoviePresenter {
     this.#comments = comments;
 
     const prevMovieComponent = this.#movieComponent;
-    const prevMoviePopupComponent = this.#moviePopupComponent;
+    //const prevMoviePopupComponent = this.#moviePopupComponent;
+    //const prevMovieComments = this.#movieCommentsComponent;
 
     this.#movieComponent = new MovieCardView(movie);
     this.#moviePopupComponent = new MoviePopupView(movie);
@@ -36,7 +37,7 @@ export default class MoviePresenter {
     this.#moviePopupComponent.setClosePopupClickHandler(this.#closePopupClickHandler);
     this.#movieComponent.setAddToWatchClickHandler(this.#addToWatchClickHandler);
 
-    if (prevMovieComponent === null || prevMoviePopupComponent === null) {
+    if (prevMovieComponent === null) {
       render(this.#movieListContainer, this.#movieComponent, RenderPosition.BEFORE_END);
       return;
     }
@@ -45,12 +46,8 @@ export default class MoviePresenter {
       replace(this.#movieComponent, prevMovieComponent);
     }
 
-    if (this.#movieListContainer.element.contains(prevMoviePopupComponent.element)) {
-      replace(this.#moviePopupComponent, prevMoviePopupComponent);
-    }
-
     remove(prevMovieComponent);
-    remove(prevMoviePopupComponent);
+    //remove(prevMoviePopupComponent);
   }
 
   destroy = () => {

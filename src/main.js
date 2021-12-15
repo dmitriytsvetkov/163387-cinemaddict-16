@@ -26,4 +26,3 @@ render(siteHeaderElement, new UserRankView(), RenderPosition.BEFORE_END);
 render(siteMainElement, new SiteMenuView(filteredMovies), RenderPosition.BEFORE_BEGIN);
 
 boardPresenter.init(movies, commentsList);
-

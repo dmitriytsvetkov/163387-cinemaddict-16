@@ -38,7 +38,6 @@ export default class BoardPresenter {
   init = (movies, comments) => {
     this.#movies = [...movies];
     this.#comments = [...comments];
-
     render(this.#container, this.#moviesSectionComponent, RenderPosition.BEFORE_END);
     render(this.#moviesSectionComponent, this.#movieListComponent, RenderPosition.BEFORE_END);
 
@@ -120,7 +119,7 @@ export default class BoardPresenter {
 
   #movieChangeHandler = (updatedMovie) => {
     this.#movies = updateItem(this.#movies, updatedMovie);
-    this.#moviePresenter.get(updatedMovie.id).init(updatedMovie);
+    this.#moviePresenter.get(updatedMovie.id).init(updatedMovie, this.#comments);
   }
 
   #renderBoard = () => {
