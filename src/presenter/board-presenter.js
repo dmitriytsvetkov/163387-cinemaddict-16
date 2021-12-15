@@ -78,9 +78,7 @@ export default class BoardPresenter {
   }
 
   #renderLoadMoreButton = () => {
-
     render(this.#movieListComponent, this.#loadMoreButtonComponent, RenderPosition.BEFORE_END);
-
     this.#loadMoreButtonComponent.setLoadMoreClickHandler(this.#loadMoreButtonClickHandler);
   }
 
@@ -135,8 +133,8 @@ export default class BoardPresenter {
 
     this.#renderMovieList();
 
-    this.#renderTopRatedMovies();
-    this.#renderMostCommentedMovies();
+    /*this.#renderTopRatedMovies();
+    this.#renderMostCommentedMovies();*/
 
     this.#renderMovieCountStatistic();
   }

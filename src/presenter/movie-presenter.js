@@ -34,18 +34,18 @@ export default class MoviePresenter {
 
     this.#movieComponent.setEditClickHandler(this.#editClickHandler);
     this.#moviePopupComponent.setClosePopupClickHandler(this.#closePopupClickHandler);
+    this.#movieComponent.setAddToWatchClickHandler(this.#addToWatchClickHandler);
 
     if (prevMovieComponent === null || prevMoviePopupComponent === null) {
       render(this.#movieListContainer, this.#movieComponent, RenderPosition.BEFORE_END);
       return;
     }
 
-    if (this.#movieListContainer.element.contains(prevMovieComponent)) {
+    if (this.#movieListContainer.element.contains(prevMovieComponent.element)) {
       replace(this.#movieComponent, prevMovieComponent);
     }
 
-    if (this.#movieListContainer.element.contains(prevMoviePopupComponent)) {
-
+    if (this.#movieListContainer.element.contains(prevMoviePopupComponent.element)) {
       replace(this.#moviePopupComponent, prevMoviePopupComponent);
     }
 
