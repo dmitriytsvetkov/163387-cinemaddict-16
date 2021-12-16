@@ -54,7 +54,7 @@ export default class MoviePresenter {
       return;
     }
 
-    if (this.#mode === Mode.OPENED) {
+    if (this.#movieListContainer.element.contains(prevMovieComponent.element)) {
       replace(this.#movieComponent, prevMovieComponent);
       replace(this.#moviePopupComponent, prevMoviePopupComponent);
     }
