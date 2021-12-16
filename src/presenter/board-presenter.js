@@ -49,7 +49,7 @@ export default class BoardPresenter {
   }
 
   #renderMovie = (movie, container) => {
-    const moviePresenter = new MoviePresenter(container, this.#movieChangeHandler);
+    const moviePresenter = new MoviePresenter(container, this.#movieChangeHandler, this.#changeModeHandler);
     moviePresenter.init(movie, this.#comments);
 
     this.#moviePresenter.set(movie.id, moviePresenter);
@@ -120,6 +120,10 @@ export default class BoardPresenter {
   #movieChangeHandler = (updatedMovie) => {
     this.#movies = updateItem(this.#movies, updatedMovie);
     this.#moviePresenter.get(updatedMovie.id).init(updatedMovie, this.#comments);
+  }
+
+  #changeModeHandler = () => {
+    this.#moviePresenter.forEach((movie) => movie.resetView());
   }
 
   #renderBoard = () => {

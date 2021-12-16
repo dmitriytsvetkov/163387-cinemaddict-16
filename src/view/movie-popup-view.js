@@ -121,13 +121,13 @@ export default class MoviePopupView extends AbstractView {
   }
 
   setClosePopupClickHandler = (callback) => {
-    this._callback.editClick = callback;
+    this._callback.closeClick = callback;
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closePopupClickHandler);
   }
 
   #closePopupClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.editClick();
+    this._callback.closeClick();
   }
 
   setAddToWatchClickHandler = (callback) => {
