@@ -26,8 +26,7 @@ export default class MoviePresenter {
     this.#comments = comments;
 
     const prevMovieComponent = this.#movieComponent;
-    //const prevMoviePopupComponent = this.#moviePopupComponent;
-    //const prevMovieComments = this.#movieCommentsComponent;
+    const prevMoviePopupComponent = this.#moviePopupComponent;
 
     this.#movieComponent = new MovieCardView(movie);
     this.#moviePopupComponent = new MoviePopupView(movie);
@@ -35,7 +34,12 @@ export default class MoviePresenter {
 
     this.#movieComponent.setEditClickHandler(this.#editClickHandler);
     this.#moviePopupComponent.setClosePopupClickHandler(this.#closePopupClickHandler);
+    this.#moviePopupComponent.setAddToWatchClickHandler(this.#addToWatchClickHandler);
+    this.#moviePopupComponent.setMarkAsWatchedClickHandler(this.#markAsWatchedClickHandler);
+    this.#moviePopupComponent.setAddToFavoriteClickHandler(this.#addToFavoriteClickHandler);
     this.#movieComponent.setAddToWatchClickHandler(this.#addToWatchClickHandler);
+    this.#movieComponent.setMarkAsWatchedClickHandler(this.#markAsWatchedClickHandler);
+    this.#movieComponent.setAddToFavoriteClickHandler(this.#addToFavoriteClickHandler);
 
     if (prevMovieComponent === null) {
       render(this.#movieListContainer, this.#movieComponent, RenderPosition.BEFORE_END);
@@ -44,10 +48,11 @@ export default class MoviePresenter {
 
     if (this.#movieListContainer.element.contains(prevMovieComponent.element)) {
       replace(this.#movieComponent, prevMovieComponent);
+      replace(this.#moviePopupComponent, prevMoviePopupComponent);
     }
 
     remove(prevMovieComponent);
-    //remove(prevMoviePopupComponent);
+    remove(prevMoviePopupComponent);
   }
 
   destroy = () => {
@@ -87,6 +92,14 @@ export default class MoviePresenter {
 
   #addToWatchClickHandler = () => {
     this.#changeData({...this.#movie, isInWatchlist: !this.#movie.isInWatchlist});
+  }
+
+  #markAsWatchedClickHandler = () => {
+    this.#changeData({...this.#movie, isWatched: !this.#movie.isWatched});
+  }
+
+  #addToFavoriteClickHandler = () => {
+    this.#changeData({...this.#movie, isFavorite: !this.#movie.isFavorite});
   }
 }
 
