@@ -3,7 +3,7 @@ import SiteMenuView from './view/site-menu-view';
 import UserRankView from './view/user-rank-view';
 import {generateMovie, generateComment} from './mock/movie';
 import {generateMoviesFilter} from './filter';
-import BoardPresenter from './presenter/board-presenter';
+import MoviesBoardPresenter from './presenter/movies-board-presenter';
 
 const MOVIE_COUNT = 11;
 
@@ -20,9 +20,9 @@ movies.map((movie, index) => {
   commentsList.push(generateComment(index));
 });
 
-const boardPresenter = new BoardPresenter(siteMainElement);
+const moviesBoardPresenter = new MoviesBoardPresenter(siteMainElement);
 
 render(siteHeaderElement, new UserRankView(), RenderPosition.BEFORE_END);
 render(siteMainElement, new SiteMenuView(filteredMovies), RenderPosition.BEFORE_BEGIN);
 
-boardPresenter.init(movies, commentsList);
+moviesBoardPresenter.init(movies, commentsList);

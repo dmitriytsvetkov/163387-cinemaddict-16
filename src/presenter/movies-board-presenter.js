@@ -9,6 +9,9 @@ import MovieListContainerView from '../view/movie-list-container-view';
 import MoviesCountView from '../view/movies-count-view';
 import MoviePresenter from './movie-presenter';
 import {updateItem} from '../utils/common';
+import MovieCardView from '../view/movie-card-view';
+import MoviePopupView from '../view/movie-popup-view';
+import MovieCommentsView from '../view/movie-comments-view';
 
 const MOVIE_COUNT_PER_STEP = 5;
 
@@ -16,7 +19,7 @@ export default class BoardPresenter {
   #container = null;
   #movies = [];
   #comments = [];
-  #moviePresenter = new Map();
+  #moviesComponents = new Map();
 
   #renderedMoviesCount = MOVIE_COUNT_PER_STEP;
 
@@ -49,10 +52,80 @@ export default class BoardPresenter {
   }
 
   #renderMovie = (movie, container) => {
-    const moviePresenter = new MoviePresenter(container, this.#movieChangeHandler, this.#changeModeHandler);
-    moviePresenter.init(movie, this.#comments);
+    // const moviePresenter = new MoviePresenter(container, this.#updateMovie);
+    // moviePresenter.init(movie, this.#comments);
+    const movieComponent = new MovieCardView(movie);
 
-    this.#moviePresenter.set(movie.id, moviePresenter);
+    const addToWatchClickHandler = () => {
+      this.#updateMovie({...movie, isInWatchlist: !movie.isInWatchlist});
+    };
+
+    const markAsWatchedClickHandler = () => {
+      this.#updateMovie({...movie, isWatched: !movie.isWatched});
+    };
+
+    const addToFavoriteClickHandler = () => {
+      this.#updateMovie({...movie, isFavorite: !movie.isFavorite});
+    };
+
+    const openPopupClickHandler = () => {
+      this.#siteBodyElement.classList.add('hide-overflow');
+      this.#renderPopup(movie, this.#comments);
+    };
+
+    movieComponent.setEditClickHandler(openPopupClickHandler);
+    movieComponent.setAddToWatchClickHandler(addToWatchClickHandler);
+    movieComponent.setMarkAsWatchedClickHandler(markAsWatchedClickHandler);
+    movieComponent.setAddToFavoriteClickHandler(addToFavoriteClickHandler);
+
+    render(container, movieComponent, RenderPosition.BEFORE_END);
+    this.#moviesComponents.set(movie.id, movie);
+  }
+
+  #renderPopup = (movie, comments) => {
+    const moviePopupComponent = new MoviePopupView(movie);
+    const movieCommentsComponent = new MovieCommentsView(movie, comments);
+
+    const hidePopup = () => {
+      remove(moviePopupComponent);
+      this.#siteBodyElement.classList.remove('hide-overflow');
+    };
+
+    const onEscKeyKeyDown = (evt) => {
+      if (evt.key === 'Escape' || evt.key === 'Esc') {
+        evt.preventDefault();
+        hidePopup();
+        document.removeEventListener('keydown', onEscKeyKeyDown);
+      }
+    };
+
+    const closePopupClickHandler = () => {
+      hidePopup();
+      document.removeEventListener('keydown', onEscKeyKeyDown);
+    };
+
+    document.addEventListener('keydown', onEscKeyKeyDown);
+
+    const addToWatchClickHandler = () => {
+      this.#updateMovie({...movie, isInWatchlist: !movie.isInWatchlist});
+    };
+
+    const markAsWatchedClickHandler = () => {
+      this.#updateMovie({...movie, isWatched: !movie.isWatched});
+    };
+
+    const addToFavoriteClickHandler = () => {
+      this.#updateMovie({...movie, isFavorite: !movie.isFavorite});
+    };
+
+    moviePopupComponent.setClosePopupClickHandler(closePopupClickHandler);
+    moviePopupComponent.setAddToWatchClickHandler(addToWatchClickHandler);
+    moviePopupComponent.setMarkAsWatchedClickHandler(markAsWatchedClickHandler);
+    moviePopupComponent.setAddToFavoriteClickHandler(addToFavoriteClickHandler);
+
+    render(this.#siteBodyElement, moviePopupComponent, RenderPosition.AFTER_END);
+    const filmDetailsBottomContainerElement = moviePopupComponent.element.querySelector('.film-details__bottom-container');
+    render(filmDetailsBottomContainerElement, movieCommentsComponent, RenderPosition.BEFORE_END);
   }
 
   #renderNoMovies = () => {
@@ -111,19 +184,15 @@ export default class BoardPresenter {
   }
 
   #clearMovieList = () => {
-    this.#moviePresenter.forEach((movie) => movie.destroy());
-    this.#moviePresenter.clear();
+    this.#moviesComponents.forEach((movie) => movie.destroy());
+    this.#moviesComponents.clear();
     this.#renderedMoviesCount = MOVIE_COUNT_PER_STEP;
     remove(this.#loadMoreButtonComponent);
   }
 
-  #movieChangeHandler = (updatedMovie) => {
+  #updateMovie = (updatedMovie) => {
     this.#movies = updateItem(this.#movies, updatedMovie);
-    this.#moviePresenter.get(updatedMovie.id).init(updatedMovie, this.#comments);
-  }
-
-  #changeModeHandler = () => {
-    this.#moviePresenter.forEach((movie) => movie.resetView());
+    this.#moviesComponents.get(updatedMovie.id).init(updatedMovie, this.#comments);
   }
 
   #renderBoard = () => {
@@ -141,5 +210,4 @@ export default class BoardPresenter {
 
     this.#renderMovieCountStatistic();
   }
-
 }
