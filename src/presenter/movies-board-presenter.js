@@ -1,13 +1,12 @@
 import MoviesSectionView from '../view/movies-section-view';
 import MovieListView from '../view/movie-list-view';
 import MovieListExtraView from '../view/movie-list-extra-view';
-import {remove, render, RenderPosition} from '../utils/render';
+import {remove, render, RenderPosition, replace} from '../utils/render';
 import NoMoviesView from '../view/no-movies-view';
 import LoadMoreButtonView from '../view/load-more-button-view';
 import SortView from '../view/sort-view';
 import MovieListContainerView from '../view/movie-list-container-view';
 import MoviesCountView from '../view/movies-count-view';
-import MoviePresenter from './movie-presenter';
 import {updateItem} from '../utils/common';
 import MovieCardView from '../view/movie-card-view';
 import MoviePopupView from '../view/movie-popup-view';
@@ -15,7 +14,7 @@ import MovieCommentsView from '../view/movie-comments-view';
 
 const MOVIE_COUNT_PER_STEP = 5;
 
-export default class BoardPresenter {
+export default class MoviesBoardPresenter {
   #container = null;
   #movies = [];
   #comments = [];
@@ -28,6 +27,7 @@ export default class BoardPresenter {
   #movieListContainerComponent = new MovieListContainerView();
   #loadMoreButtonComponent = new LoadMoreButtonView();
   #noMoviesComponent = new NoMoviesView();
+  #moviePopupComponent = null;
 
   #siteBodyElement = document.querySelector('body');
   #siteFooterElement = this.#siteBodyElement.querySelector('.footer');
@@ -51,10 +51,12 @@ export default class BoardPresenter {
     render(this.#container, new SortView(), RenderPosition.AFTER_BEGIN);
   }
 
-  #renderMovie = (movie, container) => {
-    // const moviePresenter = new MoviePresenter(container, this.#updateMovie);
-    // moviePresenter.init(movie, this.#comments);
-    const movieComponent = new MovieCardView(movie);
+  #renderMovieCard = (movie, container) => {
+    const prevMovieCardComponent = this.#moviesComponents.get(movie.id);
+
+    const movieCardComponent = new MovieCardView(movie);
+
+    this.#moviesComponents.set(movie.id, movieCardComponent);
 
     const addToWatchClickHandler = () => {
       this.#updateMovie({...movie, isInWatchlist: !movie.isInWatchlist});
@@ -73,21 +75,36 @@ export default class BoardPresenter {
       this.#renderPopup(movie, this.#comments);
     };
 
-    movieComponent.setEditClickHandler(openPopupClickHandler);
-    movieComponent.setAddToWatchClickHandler(addToWatchClickHandler);
-    movieComponent.setMarkAsWatchedClickHandler(markAsWatchedClickHandler);
-    movieComponent.setAddToFavoriteClickHandler(addToFavoriteClickHandler);
+    movieCardComponent.setEditClickHandler(openPopupClickHandler);
+    movieCardComponent.setAddToWatchClickHandler(addToWatchClickHandler);
+    movieCardComponent.setMarkAsWatchedClickHandler(markAsWatchedClickHandler);
+    movieCardComponent.setAddToFavoriteClickHandler(addToFavoriteClickHandler);
 
-    render(container, movieComponent, RenderPosition.BEFORE_END);
-    this.#moviesComponents.set(movie.id, movie);
+    if (!prevMovieCardComponent) {
+      render(container, movieCardComponent, RenderPosition.BEFORE_END);
+    } else {
+      replace(movieCardComponent, prevMovieCardComponent);
+      remove(prevMovieCardComponent);
+
+      if (this.#moviePopupComponent !== null) {
+        this.#renderPopup(movie, this.#comments);
+      }
+    }
   }
 
   #renderPopup = (movie, comments) => {
-    const moviePopupComponent = new MoviePopupView(movie);
+    const prevMoviePopupComponent = this.#moviePopupComponent;
+
+    this.#moviePopupComponent = new MoviePopupView(movie);
+
     const movieCommentsComponent = new MovieCommentsView(movie, comments);
 
     const hidePopup = () => {
-      remove(moviePopupComponent);
+      if (this.#moviePopupComponent !== null) {
+        remove(this.#moviePopupComponent);
+      }
+
+      this.#moviePopupComponent = null;
       this.#siteBodyElement.classList.remove('hide-overflow');
     };
 
@@ -118,14 +135,18 @@ export default class BoardPresenter {
       this.#updateMovie({...movie, isFavorite: !movie.isFavorite});
     };
 
-    moviePopupComponent.setClosePopupClickHandler(closePopupClickHandler);
-    moviePopupComponent.setAddToWatchClickHandler(addToWatchClickHandler);
-    moviePopupComponent.setMarkAsWatchedClickHandler(markAsWatchedClickHandler);
-    moviePopupComponent.setAddToFavoriteClickHandler(addToFavoriteClickHandler);
+    this.#moviePopupComponent.setClosePopupClickHandler(closePopupClickHandler);
+    this.#moviePopupComponent.setAddToWatchClickHandler(addToWatchClickHandler);
+    this.#moviePopupComponent.setMarkAsWatchedClickHandler(markAsWatchedClickHandler);
+    this.#moviePopupComponent.setAddToFavoriteClickHandler(addToFavoriteClickHandler);
 
-    render(this.#siteBodyElement, moviePopupComponent, RenderPosition.AFTER_END);
-    const filmDetailsBottomContainerElement = moviePopupComponent.element.querySelector('.film-details__bottom-container');
+    render(this.#siteBodyElement, this.#moviePopupComponent, RenderPosition.AFTER_END);
+    const filmDetailsBottomContainerElement = this.#moviePopupComponent.element.querySelector('.film-details__bottom-container');
     render(filmDetailsBottomContainerElement, movieCommentsComponent, RenderPosition.BEFORE_END);
+    if (prevMoviePopupComponent !== null) {
+      remove(prevMoviePopupComponent);
+    }
+
   }
 
   #renderNoMovies = () => {
@@ -135,12 +156,12 @@ export default class BoardPresenter {
   #renderMovies = (from, to, container) => {
     this.#movies
       .slice(from, to)
-      .forEach((movie) => this.#renderMovie(movie, container));
+      .forEach((movie) => this.#renderMovieCard(movie, container));
   }
 
   #loadMoreButtonClickHandler = () => {
     this.#movies.slice(this.#renderedMoviesCount, this.#renderedMoviesCount + MOVIE_COUNT_PER_STEP)
-      .forEach((movie) => this.#renderMovie(movie, this.#movieListContainerComponent));
+      .forEach((movie) => this.#renderMovieCard(movie, this.#movieListContainerComponent));
 
     this.#renderedMoviesCount += MOVIE_COUNT_PER_STEP;
 
@@ -192,7 +213,7 @@ export default class BoardPresenter {
 
   #updateMovie = (updatedMovie) => {
     this.#movies = updateItem(this.#movies, updatedMovie);
-    this.#moviesComponents.get(updatedMovie.id).init(updatedMovie, this.#comments);
+    this.#renderMovieCard(updatedMovie, this.#movieListContainerComponent);
   }
 
   #renderBoard = () => {
