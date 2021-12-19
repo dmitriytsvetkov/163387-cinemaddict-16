@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import {getRandomArray, getRandomArrayElement, getRandomInteger, getRandomFloat, getRandomUniqueArray} from '../utils/common';
+import {nanoid} from 'nanoid';
 
 const generateRandomCommentsIds = () => getRandomUniqueArray(10, getRandomInteger(0, 5));
 
@@ -120,6 +121,7 @@ const generateActors = () => {
 };
 
 const generateMovie = () => ({
+  id: nanoid(),
   poster: generatePosters(),
   title: generateTitle(),
   alternativeTitle: generateTitle(),
