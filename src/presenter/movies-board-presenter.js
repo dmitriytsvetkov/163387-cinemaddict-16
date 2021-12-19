@@ -10,7 +10,6 @@ import MoviesCountView from '../view/movies-count-view';
 import {updateItem} from '../utils/common';
 import MovieCardView from '../view/movie-card-view';
 import MoviePopupView from '../view/movie-popup-view';
-import MovieCommentsView from '../view/movie-comments-view';
 
 const MOVIE_COUNT_PER_STEP = 5;
 
@@ -92,12 +91,12 @@ export default class MoviesBoardPresenter {
     }
   }
 
-  #renderPopup = (movie, comments) => {
+  #renderPopup = (movie, allComments) => {
     const prevMoviePopupComponent = this.#moviePopupComponent;
 
-    this.#moviePopupComponent = new MoviePopupView(movie);
+    const filteredComments = allComments.filter(({id}) => movie.comments.includes(id));
 
-    const movieCommentsComponent = new MovieCommentsView(movie, comments);
+    this.#moviePopupComponent = new MoviePopupView(movie, filteredComments);
 
     const hidePopup = () => {
       if (this.#moviePopupComponent !== null) {
@@ -141,8 +140,6 @@ export default class MoviesBoardPresenter {
     this.#moviePopupComponent.setAddToFavoriteClickHandler(addToFavoriteClickHandler);
 
     render(this.#siteBodyElement, this.#moviePopupComponent, RenderPosition.AFTER_END);
-    const filmDetailsBottomContainerElement = this.#moviePopupComponent.element.querySelector('.film-details__bottom-container');
-    render(filmDetailsBottomContainerElement, movieCommentsComponent, RenderPosition.BEFORE_END);
     if (prevMoviePopupComponent !== null) {
       remove(prevMoviePopupComponent);
     }
