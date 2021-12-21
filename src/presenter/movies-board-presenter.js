@@ -18,6 +18,7 @@ export default class MoviesBoardPresenter {
   #movies = [];
   #comments = [];
   #moviesComponents = new Map();
+  #popupScrollPosition = null;
 
   #renderedMoviesCount = MOVIE_COUNT_PER_STEP;
 
@@ -74,7 +75,7 @@ export default class MoviesBoardPresenter {
       this.#renderPopup(movie, this.#comments);
     };
 
-    movieCardComponent.setEditClickHandler(openPopupClickHandler);
+    movieCardComponent.setOpenPopupClickHandler(openPopupClickHandler);
     movieCardComponent.setAddToWatchClickHandler(addToWatchClickHandler);
     movieCardComponent.setMarkAsWatchedClickHandler(markAsWatchedClickHandler);
     movieCardComponent.setAddToFavoriteClickHandler(addToFavoriteClickHandler);
@@ -86,6 +87,7 @@ export default class MoviesBoardPresenter {
       remove(prevMovieCardComponent);
 
       if (this.#moviePopupComponent !== null) {
+        this.#popupScrollPosition = this.#moviePopupComponent.element.scrollTop;
         this.#renderPopup(movie, this.#comments);
       }
     }
@@ -140,10 +142,13 @@ export default class MoviesBoardPresenter {
     this.#moviePopupComponent.setAddToFavoriteClickHandler(addToFavoriteClickHandler);
 
     render(this.#siteBodyElement, this.#moviePopupComponent, RenderPosition.AFTER_END);
+
+    this.#moviePopupComponent.element.scrollTop = this.#popupScrollPosition;
+
     if (prevMoviePopupComponent !== null) {
       remove(prevMoviePopupComponent);
+      this.#popupScrollPosition = null;
     }
-
   }
 
   #renderNoMovies = () => {

@@ -236,6 +236,7 @@ export default class MoviePopupView extends SmartView {
     this.updateData({
       newEmoji: evt.target.value
     });
+
   }
 
   restoreHandlers = () => {
