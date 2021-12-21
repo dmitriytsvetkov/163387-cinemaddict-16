@@ -1,4 +1,4 @@
-import {getFormattedDate} from '../utils/movie-utils';
+import {getFormattedMovieDate, getFormattedMovieDuration} from '../utils/movie-utils';
 import {CARD_BUTTON_ACTIVE_CLASS_NAME} from '../constants';
 import AbstractView from './abstract-view';
 
@@ -16,7 +16,9 @@ const createMovieCardTemplate = (movie) => {
     isWatched,
     isInWatchlist,
   } = movie;
-  const releaseYear = getFormattedDate(releaseDate, 'YYYY');
+
+  const releaseYear = getFormattedMovieDate(releaseDate, 'YYYY');
+  const formattedDuration = getFormattedMovieDuration(duration);
 
   const favoriteClassName = isFavorite ? CARD_BUTTON_ACTIVE_CLASS_NAME : '';
   const alreadyWatchedClassName = isWatched ? CARD_BUTTON_ACTIVE_CLASS_NAME : '';
@@ -35,7 +37,7 @@ const createMovieCardTemplate = (movie) => {
       <p class="film-card__rating">${rating}</p>
       <p class="film-card__info">
         <span class="film-card__year">${releaseYear}</span>
-        <span class="film-card__duration">${duration}</span>
+        <span class="film-card__duration">${formattedDuration}</span>
         <span class="film-card__genre">${genres[0]}</span>
       </p>
       <img src="./images/posters/${poster}" alt="" class="film-card__poster">

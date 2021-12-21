@@ -1,4 +1,4 @@
-import {getFormattedDate} from '../utils/movie-utils';
+import {getFormattedMovieDate, getFormattedMovieDuration, getRelativeTime} from '../utils/movie-utils';
 import {POPUP_BUTTON_ACTIVE_CLASS_NAME} from '../constants';
 import SmartView from './smart-view';
 
@@ -14,7 +14,7 @@ const createRepeatingCommentTemplate = (comments) => comments.map(({author, date
     <p class="film-details__comment-text">${text}</p>
     <p class="film-details__comment-info">
       <span class="film-details__comment-author">${author}</span>
-      <span class="film-details__comment-day">${getFormattedDate(date, 'YYYY/MM/DD hh:mm')}</span>
+      <span class="film-details__comment-day">${getRelativeTime(date)}</span>
       <button class="film-details__comment-delete">Delete</button>
     </p>
   </div>
@@ -84,7 +84,9 @@ const createMoviePopupTemplate = (movie, comments) => {
     isWatched,
     newEmoji
   } = movie;
-  const formattedReleaseDate = getFormattedDate(releaseDate, 'D MMMM YYYY');
+
+  const formattedReleaseDate = getFormattedMovieDate(releaseDate, 'D MMMM YYYY');
+  const formattedDuration = getFormattedMovieDuration(duration);
   const genresTemplate = createMoviePopupGenreTemplate(genres);
   const commentsTemplate = createMovieCommentsTemplate(comments, newEmoji);
 
@@ -136,7 +138,7 @@ const createMoviePopupTemplate = (movie, comments) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
-                  <td class="film-details__cell">${duration}</td>
+                  <td class="film-details__cell">${formattedDuration}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>
