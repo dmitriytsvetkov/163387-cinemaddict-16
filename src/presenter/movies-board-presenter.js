@@ -43,6 +43,7 @@ export default class MoviesBoardPresenter {
     this.#container = listContainer;
   }
 
+
   init = (movies, comments) => {
     this.#movies = [...movies];
     this.#sourcedMovies = [...movies];
