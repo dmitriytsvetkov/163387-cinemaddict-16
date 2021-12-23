@@ -7,8 +7,19 @@ dayjs.extend(relativeTime);
 
 const getFormattedMovieDate = (date, formatString) => dayjs(date).format(formatString);
 
+const getFormattedMovieYear = (date) => getFormattedMovieDate(date, 'YYYY');
+
 const getFormattedMovieDuration = (minutes) => dayjs.duration(minutes, 'm').format('H[h] m[m]');
 
 const getRelativeTime = (date) => dayjs(date).fromNow();
 
-export {getFormattedMovieDate, getFormattedMovieDuration, getRelativeTime};
+const sortByYear = (movieA, movieB) => {
+  const yearA = getFormattedMovieYear(movieA.releaseDate);
+  const yearB = getFormattedMovieYear(movieB.releaseDate);
+
+  return yearB - yearA;
+};
+
+const sortByRating = (movieA, movieB) => movieB.rating - movieA.rating;
+
+export {getFormattedMovieDate, getFormattedMovieDuration, getRelativeTime, sortByYear, getFormattedMovieYear, sortByRating};
