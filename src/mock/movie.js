@@ -1,5 +1,11 @@
 import dayjs from 'dayjs';
-import {getRandomArray, getRandomArrayElement, getRandomInteger, getRandomFloat, getRandomUniqueArray} from '../utils/common';
+import {
+  getRandomArray,
+  getRandomArrayElement,
+  getRandomFloat,
+  getRandomInteger,
+  getRandomUniqueArray
+} from '../utils/common';
 import {nanoid} from 'nanoid';
 
 const generateRandomCommentsIds = () => getRandomUniqueArray(10, getRandomInteger(0, 5));
@@ -75,12 +81,7 @@ const generateDate = () => {
   return dayjs().subtract(randomYear, 'year').toDate();
 };
 
-const generateDuration = () => {
-  const hours = getRandomInteger(1, 2);
-  const minutes = getRandomInteger(0, 59);
-
-  return `${hours}h ${minutes}m`;
-};
+const generateDuration = () => getRandomInteger(30, 180);
 
 const generateDirector = () => {
   const directors = [
