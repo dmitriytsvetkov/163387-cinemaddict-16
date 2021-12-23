@@ -1,4 +1,4 @@
-import {getFormattedMovieDate, getFormattedMovieDuration} from '../utils/movie-utils';
+import {getFormattedMovieDuration, getFormattedMovieYear} from '../utils/movie-utils';
 import {CARD_BUTTON_ACTIVE_CLASS_NAME} from '../constants';
 import AbstractView from './abstract-view';
 
@@ -17,7 +17,7 @@ const createMovieCardTemplate = (movie) => {
     isInWatchlist,
   } = movie;
 
-  const releaseYear = getFormattedMovieDate(releaseDate, 'YYYY');
+  const releaseYear = getFormattedMovieYear(releaseDate);
   const formattedDuration = getFormattedMovieDuration(duration);
 
   const favoriteClassName = isFavorite ? CARD_BUTTON_ACTIVE_CLASS_NAME : '';

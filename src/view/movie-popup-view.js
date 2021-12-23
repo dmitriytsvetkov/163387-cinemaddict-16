@@ -1,4 +1,4 @@
-import {getFormattedMovieDate, getFormattedMovieDuration, getRelativeTime} from '../utils/movie-utils';
+import {getFormattedMovieDuration, getFormattedMovieYear, getRelativeTime} from '../utils/movie-utils';
 import {POPUP_BUTTON_ACTIVE_CLASS_NAME} from '../constants';
 import SmartView from './smart-view';
 
@@ -85,8 +85,8 @@ const createMoviePopupTemplate = (movie, comments) => {
     newEmoji
   } = movie;
 
-  const formattedReleaseDate = getFormattedMovieDate(releaseDate, 'D MMMM YYYY');
-  const formattedDuration = getFormattedMovieDuration(duration);
+  const movieReleaseYear = getFormattedMovieYear(releaseDate);
+  const movieDuration = getFormattedMovieDuration(duration);
   const genresTemplate = createMoviePopupGenreTemplate(genres);
   const commentsTemplate = createMovieCommentsTemplate(comments, newEmoji);
 
@@ -134,11 +134,11 @@ const createMoviePopupTemplate = (movie, comments) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">${formattedReleaseDate}</td>
+                  <td class="film-details__cell">${movieReleaseYear}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
-                  <td class="film-details__cell">${formattedDuration}</td>
+                  <td class="film-details__cell">${movieDuration}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>
