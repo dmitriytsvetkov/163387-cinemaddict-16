@@ -47,4 +47,10 @@ const updateItem = (items, update) => {
   ];
 };
 
-export {getRandomArrayElement, getRandomArray, getRandomInteger, getRandomFloat, getRandomUniqueArray, updateItem};
+const removeClassFromElementList = (elementList, className) => {
+  elementList.forEach((element) => {
+    element.classList.remove(className);
+  });
+};
+
+export {getRandomArrayElement, getRandomArray, getRandomInteger, getRandomFloat, getRandomUniqueArray, updateItem, removeClassFromElementList};

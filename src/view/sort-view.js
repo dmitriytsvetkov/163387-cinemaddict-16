@@ -1,5 +1,6 @@
 import AbstractView from './abstract-view';
 import {SortType} from '../constants';
+import {removeClassFromElementList} from '../utils/common';
 
 const createSortTemplate = () => `<ul class="sort">
     <li><a href="#" class="sort__button sort__button--active" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
@@ -17,13 +18,6 @@ export default class SortView extends AbstractView {
     this.element.addEventListener('click', this.#sortTypeChangeHandler);
   }
 
-  removeClass = (nodeList, className) => {
-    const elements = nodeList.querySelectorAll('.sort__button');
-    elements.forEach((element) => {
-      element.classList.remove(className);
-    });
-  }
-
   #sortTypeChangeHandler = (evt) => {
     if (evt.target.tagName !== 'A') {
       return;
@@ -31,7 +25,7 @@ export default class SortView extends AbstractView {
 
     evt.preventDefault();
     this._callback.setSortType(evt.target.dataset.sortType);
-    this.removeClass(this.element, 'sort__button--active');
+    removeClassFromElementList(this.element.querySelectorAll('.sort__button'), 'sort__button--active');
     evt.target.classList.add('sort__button--active');
   }
 }
