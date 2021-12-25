@@ -4,7 +4,6 @@ import {updateItem} from '../utils/common';
 import {sortByYear, sortByRating} from '../utils/movie-utils';
 import MoviesSectionView from '../view/movies-section-view';
 import MovieListView from '../view/movie-list-view';
-import MovieListExtraView from '../view/movie-list-extra-view';
 import NoMoviesView from '../view/no-movies-view';
 import LoadMoreButtonView from '../view/load-more-button-view';
 import SortView from '../view/sort-view';
@@ -210,22 +209,6 @@ export default class MoviesBoardPresenter {
     this.#loadMoreButtonComponent.setLoadMoreClickHandler(this.#loadMoreButtonClickHandler);
   }
 
-  #renderTopRatedMovies = () => {
-    const movieListExtraComponent = new MovieListExtraView('Top rated');
-    render(this.#moviesSectionComponent, movieListExtraComponent, RenderPosition.BEFORE_END);
-    const movieListContainerComponent = new MovieListContainerView();
-    render(movieListExtraComponent, movieListContainerComponent, RenderPosition.BEFORE_END);
-    this.#renderMovies(0, Math.min(this.#movies.length, 2), movieListContainerComponent);
-  }
-
-  #renderMostCommentedMovies = () => {
-    const movieListExtraComponent = new MovieListExtraView('Most commented');
-    render(this.#moviesSectionComponent, movieListExtraComponent, RenderPosition.BEFORE_END);
-    const movieListContainerComponent = new MovieListContainerView();
-    render(movieListExtraComponent, movieListContainerComponent, RenderPosition.BEFORE_END);
-    this.#renderMovies(0, Math.min(this.#movies.length, 2), movieListContainerComponent);
-  }
-
   #renderMovieCountStatistic = () => {
     render(this.#footerStatisticsElement, new MoviesCountView(this.#movies.length), RenderPosition.AFTER_END);
   }
@@ -261,9 +244,6 @@ export default class MoviesBoardPresenter {
     this.#renderSort();
 
     this.#renderMovieList();
-
-    /*this.#renderTopRatedMovies();
-    this.#renderMostCommentedMovies();*/
 
     this.#renderMovieCountStatistic();
   }

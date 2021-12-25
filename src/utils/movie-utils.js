@@ -20,6 +20,17 @@ const sortByYear = (movieA, movieB) => {
   return yearB - yearA;
 };
 
+const isGenresMultiple = (array) => array.length > 1;
+
+const trimDescription = (description, maxDescriptionLength) => {
+  let result = null;
+  if (description.length > maxDescriptionLength) {
+    result = description.substr(0, 139);
+    result = `${result}...`;
+  }
+  return result;
+};
+
 const sortByRating = (movieA, movieB) => movieB.rating - movieA.rating;
 
-export {getFormattedMovieDate, getFormattedMovieDuration, getRelativeTime, sortByYear, getFormattedMovieYear, sortByRating};
+export {getFormattedMovieDate, getFormattedMovieDuration, getRelativeTime, sortByYear, getFormattedMovieYear, sortByRating, isGenresMultiple, trimDescription};
