@@ -40,16 +40,16 @@ export default class MovieCardView extends AbstractView {
 
   #addToWatchlistClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.addToWatchlistClick();
+    this._callback.addToWatchlistClick(this.#movie);
   }
 
   #markAsWatchedClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.markAsWatchedClick();
+    this._callback.markAsWatchedClick(this.#movie);
   }
 
   #addToFavoriteClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.addToFavoriteClick();
+    this._callback.addToFavoriteClick(this.#movie);
   }
 }
