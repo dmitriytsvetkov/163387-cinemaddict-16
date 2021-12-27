@@ -4,7 +4,6 @@ import {updateItem} from '../utils/common';
 import {sortByYear, sortByRating} from '../utils/movie-utils';
 import MoviesSectionView from '../view/movies-section-view';
 import MovieListView from '../view/movie-list-view';
-import MovieListExtraView from '../view/movie-list-extra-view';
 import NoMoviesView from '../view/no-movies-view';
 import LoadMoreButtonView from '../view/load-more-button-view';
 import SortView from '../view/sort-view';
@@ -42,6 +41,7 @@ export default class MoviesBoardPresenter {
   constructor(listContainer) {
     this.#container = listContainer;
   }
+
 
   init = (movies, comments) => {
     this.#movies = [...movies];
@@ -90,27 +90,15 @@ export default class MoviesBoardPresenter {
 
     this.#moviesComponents.set(movie.id, movieCardComponent);
 
-    const addToWatchClickHandler = () => {
-      this.#updateMovie({...movie, isInWatchlist: !movie.isInWatchlist});
-    };
-
-    const markAsWatchedClickHandler = () => {
-      this.#updateMovie({...movie, isWatched: !movie.isWatched});
-    };
-
-    const addToFavoriteClickHandler = () => {
-      this.#updateMovie({...movie, isFavorite: !movie.isFavorite});
-    };
-
     const openPopupClickHandler = () => {
       this.#siteBodyElement.classList.add('hide-overflow');
       this.#renderPopup(movie, this.#comments);
     };
 
     movieCardComponent.setOpenPopupClickHandler(openPopupClickHandler);
-    movieCardComponent.setAddToWatchClickHandler(addToWatchClickHandler);
-    movieCardComponent.setMarkAsWatchedClickHandler(markAsWatchedClickHandler);
-    movieCardComponent.setAddToFavoriteClickHandler(addToFavoriteClickHandler);
+    movieCardComponent.setAddToWatchClickHandler(this.#addToWatchClickHandler, movie);
+    movieCardComponent.setMarkAsWatchedClickHandler(this.#markAsWatchedClickHandler, movie);
+    movieCardComponent.setAddToFavoriteClickHandler(this.#addToFavoriteClickHandler, movie);
 
     if (!prevMovieCardComponent) {
       render(container, movieCardComponent, RenderPosition.BEFORE_END);
@@ -132,46 +120,12 @@ export default class MoviesBoardPresenter {
 
     this.#moviePopupComponent = new MoviePopupView(movie, filteredComments);
 
-    const hidePopup = () => {
-      if (this.#moviePopupComponent !== null) {
-        remove(this.#moviePopupComponent);
-      }
+    document.addEventListener('keydown', this.#onEscKeyKeyDown);
 
-      this.#moviePopupComponent = null;
-      this.#siteBodyElement.classList.remove('hide-overflow');
-    };
-
-    const onEscKeyKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        hidePopup();
-        document.removeEventListener('keydown', onEscKeyKeyDown);
-      }
-    };
-
-    const closePopupClickHandler = () => {
-      hidePopup();
-      document.removeEventListener('keydown', onEscKeyKeyDown);
-    };
-
-    document.addEventListener('keydown', onEscKeyKeyDown);
-
-    const addToWatchClickHandler = () => {
-      this.#updateMovie({...movie, isInWatchlist: !movie.isInWatchlist});
-    };
-
-    const markAsWatchedClickHandler = () => {
-      this.#updateMovie({...movie, isWatched: !movie.isWatched});
-    };
-
-    const addToFavoriteClickHandler = () => {
-      this.#updateMovie({...movie, isFavorite: !movie.isFavorite});
-    };
-
-    this.#moviePopupComponent.setClosePopupClickHandler(closePopupClickHandler);
-    this.#moviePopupComponent.setAddToWatchClickHandler(addToWatchClickHandler);
-    this.#moviePopupComponent.setMarkAsWatchedClickHandler(markAsWatchedClickHandler);
-    this.#moviePopupComponent.setAddToFavoriteClickHandler(addToFavoriteClickHandler);
+    this.#moviePopupComponent.setClosePopupClickHandler(this.#closePopupClickHandler);
+    this.#moviePopupComponent.setAddToWatchClickHandler(this.#addToWatchClickHandler, movie);
+    this.#moviePopupComponent.setMarkAsWatchedClickHandler(this.#markAsWatchedClickHandler, movie);
+    this.#moviePopupComponent.setAddToFavoriteClickHandler(this.#addToFavoriteClickHandler, movie);
 
     render(this.#siteBodyElement, this.#moviePopupComponent, RenderPosition.AFTER_END);
 
@@ -182,6 +136,40 @@ export default class MoviesBoardPresenter {
       this.#popupScrollPosition = null;
     }
   }
+
+  #addToWatchClickHandler = (movie) => {
+    this.#updateMovie({...movie, isInWatchlist: !movie.isInWatchlist});
+  };
+
+  #markAsWatchedClickHandler = (movie) => {
+    this.#updateMovie({...movie, isWatched: !movie.isWatched});
+  };
+
+  #addToFavoriteClickHandler = (movie) => {
+    this.#updateMovie({...movie, isFavorite: !movie.isFavorite});
+  };
+
+  #onEscKeyKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this.#hidePopup();
+      document.removeEventListener('keydown', this.#onEscKeyKeyDown);
+    }
+  };
+
+  #hidePopup = () => {
+    if (this.#moviePopupComponent !== null) {
+      remove(this.#moviePopupComponent);
+    }
+
+    this.#moviePopupComponent = null;
+    this.#siteBodyElement.classList.remove('hide-overflow');
+  };
+
+  #closePopupClickHandler = () => {
+    this.#hidePopup();
+    document.removeEventListener('keydown', this.#onEscKeyKeyDown);
+  };
 
   #renderNoMovies = () => {
     render(this.#movieListComponent, this.#noMoviesComponent, RenderPosition.BEFORE_END);
@@ -207,22 +195,6 @@ export default class MoviesBoardPresenter {
   #renderLoadMoreButton = () => {
     render(this.#movieListComponent, this.#loadMoreButtonComponent, RenderPosition.BEFORE_END);
     this.#loadMoreButtonComponent.setLoadMoreClickHandler(this.#loadMoreButtonClickHandler);
-  }
-
-  #renderTopRatedMovies = () => {
-    const movieListExtraComponent = new MovieListExtraView('Top rated');
-    render(this.#moviesSectionComponent, movieListExtraComponent, RenderPosition.BEFORE_END);
-    const movieListContainerComponent = new MovieListContainerView();
-    render(movieListExtraComponent, movieListContainerComponent, RenderPosition.BEFORE_END);
-    this.#renderMovies(0, Math.min(this.#movies.length, 2), movieListContainerComponent);
-  }
-
-  #renderMostCommentedMovies = () => {
-    const movieListExtraComponent = new MovieListExtraView('Most commented');
-    render(this.#moviesSectionComponent, movieListExtraComponent, RenderPosition.BEFORE_END);
-    const movieListContainerComponent = new MovieListContainerView();
-    render(movieListExtraComponent, movieListContainerComponent, RenderPosition.BEFORE_END);
-    this.#renderMovies(0, Math.min(this.#movies.length, 2), movieListContainerComponent);
   }
 
   #renderMovieCountStatistic = () => {
@@ -260,9 +232,6 @@ export default class MoviesBoardPresenter {
     this.#renderSort();
 
     this.#renderMovieList();
-
-    /*this.#renderTopRatedMovies();
-    this.#renderMostCommentedMovies();*/
 
     this.#renderMovieCountStatistic();
   }
