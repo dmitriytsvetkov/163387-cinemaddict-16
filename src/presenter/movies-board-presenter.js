@@ -1,6 +1,5 @@
 import {SortType} from '../constants';
 import {remove, render, RenderPosition, replace} from '../utils/render';
-import {updateItem} from '../utils/common';
 import {sortByYear, sortByRating} from '../utils/movie-utils';
 import MoviesSectionView from '../view/movies-section-view';
 import MovieListView from '../view/movie-list-view';
@@ -16,8 +15,7 @@ const MOVIE_COUNT_PER_STEP = 5;
 
 export default class MoviesBoardPresenter {
   #container = null;
-  #movies = [];
-  #sourcedMovies = [];
+  #moviesModel = null;
   #currentSortType = SortType.DEFAULT;
   #comments = [];
   #moviesComponents = new Map();
@@ -38,14 +36,23 @@ export default class MoviesBoardPresenter {
   #footerStatisticsElement = this.#siteFooterElement.querySelector('.footer__statistics');
 
 
-  constructor(listContainer) {
+  constructor(listContainer, model) {
     this.#container = listContainer;
+    this.#moviesModel = model;
   }
 
+  get movies() {
+    switch (this.#currentSortType) {
+      case SortType.BY_DATE:
+        return [...this.#moviesModel.movies].sort(sortByYear);
+      case SortType.BY_RATING:
+        return [...this.#moviesModel.movies].sort(sortByRating);
+    }
 
-  init = (movies, comments) => {
-    this.#movies = [...movies];
-    this.#sourcedMovies = [...movies];
+    return this.#moviesModel.movies;
+  }
+
+  init = (comments) => {
     this.#comments = [...comments];
 
     render(this.#container, this.#moviesSectionComponent, RenderPosition.BEFORE_END);
@@ -54,28 +61,28 @@ export default class MoviesBoardPresenter {
     this.#renderBoard();
   }
 
-  #sortMovies = (sortType) => {
-    switch (sortType) {
-      case SortType.BY_DATE:
-        this.#movies.sort(sortByYear);
-        break;
-      case SortType.BY_RATING:
-        this.#movies.sort(sortByRating);
-        break;
-      default: this.#movies = [...this.#sourcedMovies];
-    }
-
-    this.#currentSortType = sortType;
+  /*#handleViewAction = (actionType, updateType, update) => {
   }
+
+  #handleModelEvent = (updateType, data) => {
+  }*/
 
   #handleSortTypeChange = (sortType) => {
     if (sortType === this.#currentSortType) {
       return;
     }
 
-    this.#sortMovies(sortType);
+    this.#currentSortType = sortType;
     this.#clearMovieList();
     this.#renderMovieList();
+  }
+
+  #updateMovie = (updatedMovie) => {
+    this.#renderMovieCard(updatedMovie);
+  }
+
+  #renderMovies = (movies) => {
+    movies.forEach((movie) => this.#renderMovieCard(movie));
   }
 
   #renderSort = () => {
@@ -83,7 +90,7 @@ export default class MoviesBoardPresenter {
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   }
 
-  #renderMovieCard = (movie, container) => {
+  #renderMovieCard = (movie) => {
     const prevMovieCardComponent = this.#moviesComponents.get(movie.id);
 
     const movieCardComponent = new MovieCardView(movie);
@@ -101,7 +108,7 @@ export default class MoviesBoardPresenter {
     movieCardComponent.setAddToFavoriteClickHandler(this.#addToFavoriteClickHandler, movie);
 
     if (!prevMovieCardComponent) {
-      render(container, movieCardComponent, RenderPosition.BEFORE_END);
+      render(this.#movieListContainerComponent, movieCardComponent, RenderPosition.BEFORE_END);
     } else {
       replace(movieCardComponent, prevMovieCardComponent);
       remove(prevMovieCardComponent);
@@ -175,37 +182,36 @@ export default class MoviesBoardPresenter {
     render(this.#movieListComponent, this.#noMoviesComponent, RenderPosition.BEFORE_END);
   }
 
-  #renderMovies = (from, to, container) => {
-    this.#movies
-      .slice(from, to)
-      .forEach((movie) => this.#renderMovieCard(movie, container));
-  }
+  #handleLoadMoreButtonClick = () => {
+    const moviesCount = this.movies.length;
+    const newRenderedMoviesCount = Math.min(moviesCount, this.#renderedMoviesCount + MOVIE_COUNT_PER_STEP);
+    const movies = this.movies.slice(this.#renderedMoviesCount, newRenderedMoviesCount);
+    this.#renderMovies(movies);
 
-  #loadMoreButtonClickHandler = () => {
-    this.#movies.slice(this.#renderedMoviesCount, this.#renderedMoviesCount + MOVIE_COUNT_PER_STEP)
-      .forEach((movie) => this.#renderMovieCard(movie, this.#movieListContainerComponent));
+    this.#renderedMoviesCount = newRenderedMoviesCount;
 
-    this.#renderedMoviesCount += MOVIE_COUNT_PER_STEP;
-
-    if (this.#renderedMoviesCount >= this.#movies.length) {
+    if (this.#renderedMoviesCount >= moviesCount) {
       remove(this.#loadMoreButtonComponent);
     }
   }
 
   #renderLoadMoreButton = () => {
     render(this.#movieListComponent, this.#loadMoreButtonComponent, RenderPosition.BEFORE_END);
-    this.#loadMoreButtonComponent.setLoadMoreClickHandler(this.#loadMoreButtonClickHandler);
+    this.#loadMoreButtonComponent.setLoadMoreClickHandler(this.#handleLoadMoreButtonClick);
   }
 
   #renderMovieCountStatistic = () => {
-    render(this.#footerStatisticsElement, new MoviesCountView(this.#movies.length), RenderPosition.AFTER_END);
+    render(this.#footerStatisticsElement, new MoviesCountView(this.movies.length), RenderPosition.AFTER_END);
   }
 
   #renderMovieList = () => {
     render(this.#movieListComponent, this.#movieListContainerComponent, RenderPosition.BEFORE_END);
-    this.#renderMovies(0, Math.min(this.#movies.length, MOVIE_COUNT_PER_STEP), this.#movieListContainerComponent);
 
-    if (this.#movies.length > MOVIE_COUNT_PER_STEP) {
+    const moviesCount = this.movies.length;
+    const movies = this.movies.slice(0, Math.min(moviesCount, MOVIE_COUNT_PER_STEP));
+    this.#renderMovies(movies);
+
+    if (moviesCount > MOVIE_COUNT_PER_STEP) {
       this.#renderLoadMoreButton();
     }
   }
@@ -217,14 +223,8 @@ export default class MoviesBoardPresenter {
     remove(this.#loadMoreButtonComponent);
   }
 
-  #updateMovie = (updatedMovie) => {
-    this.#movies = updateItem(this.#movies, updatedMovie);
-    this.#sourcedMovies = updateItem(this.#sourcedMovies, updatedMovie);
-    this.#renderMovieCard(updatedMovie, this.#movieListContainerComponent);
-  }
-
   #renderBoard = () => {
-    if (!this.#movies.length) {
+    if (!this.movies.length) {
       this.#renderNoMovies();
       return;
     }
