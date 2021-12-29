@@ -33,10 +33,4 @@ const getRandomUniqueArray = (maxValue, length) => {
   return arr;
 };
 
-const removeClassFromElementList = (elementList, className) => {
-  elementList.forEach((element) => {
-    element.classList.remove(className);
-  });
-};
-
-export {getRandomArrayElement, getRandomArray, getRandomInteger, getRandomFloat, getRandomUniqueArray, removeClassFromElementList};
+export {getRandomArrayElement, getRandomArray, getRandomInteger, getRandomFloat, getRandomUniqueArray};
