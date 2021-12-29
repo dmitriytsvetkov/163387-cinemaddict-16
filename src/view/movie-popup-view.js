@@ -3,7 +3,6 @@ import {createMoviePopupTemplate} from './templates/movie-popup-template';
 
 export default class MoviePopupView extends SmartView {
   #comments = null;
-  #movie = null;
 
   constructor(movie, comments) {
     super();
@@ -27,37 +26,34 @@ export default class MoviePopupView extends SmartView {
     this._callback.closeClick();
   }
 
-  setAddToWatchClickHandler = (callback, movie) => {
+  setAddToWatchClickHandler = (callback) => {
     this._callback.addToWatchlistClick = callback;
-    this.#movie = movie;
     this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#addToWatchlistClickHandler);
   }
 
-  setMarkAsWatchedClickHandler = (callback, movie) => {
+  setMarkAsWatchedClickHandler = (callback) => {
     this._callback.markAsWatchedClick = callback;
-    this.#movie = movie;
     this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#markAsWatchedClickHandler);
   }
 
-  setAddToFavoriteClickHandler = (callback, movie) => {
+  setAddToFavoriteClickHandler = (callback) => {
     this._callback.addToFavoriteClick = callback;
-    this.#movie = movie;
     this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#addToFavoriteClickHandler);
   }
 
   #addToWatchlistClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.addToWatchlistClick(this.#movie);
+    this._callback.addToWatchlistClick(this._data);
   }
 
   #markAsWatchedClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.markAsWatchedClick(this.#movie);
+    this._callback.markAsWatchedClick(this._data);
   }
 
   #addToFavoriteClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.addToFavoriteClick(this.#movie);
+    this._callback.addToFavoriteClick(this._data);
   }
 
   #setInnerHandlers = () => {

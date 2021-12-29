@@ -31,6 +31,7 @@ export default class MoviesBoardPresenter {
   #sortComponent = null;
   #loadMoreButtonComponent = null;
   #moviesCountComponent = null;
+  #lastOpenedMovie = null;
 
   #siteBodyElement = document.querySelector('body');
   #siteFooterElement = this.#siteBodyElement.querySelector('.footer');
@@ -67,6 +68,7 @@ export default class MoviesBoardPresenter {
   #handleViewAction = (actionType, updateType, updatedMovie) => {
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
+        this.#lastOpenedMovie = updatedMovie;
         this.#moviesModel.updateMovie(updateType, updatedMovie);
         break;
     }
@@ -89,12 +91,12 @@ export default class MoviesBoardPresenter {
   }
 
   #handleSortTypeChange = (sortType) => {
-    if (sortType === this.#currentSortType) {
+    if (this.#currentSortType === sortType) {
       return;
     }
 
     this.#currentSortType = sortType;
-    this.#clearBoard({resetSortType: true});
+    this.#clearBoard({resetRenderedMoviesCount: true});
     this.#renderBoard();
   }
 
@@ -149,9 +151,9 @@ export default class MoviesBoardPresenter {
     document.addEventListener('keydown', this.#onEscKeyKeyDown);
 
     this.#moviePopupComponent.setClosePopupClickHandler(this.#closePopupClickHandler);
-    this.#moviePopupComponent.setAddToWatchClickHandler(this.#addToWatchClickHandler, movie);
-    this.#moviePopupComponent.setMarkAsWatchedClickHandler(this.#markAsWatchedClickHandler, movie);
-    this.#moviePopupComponent.setAddToFavoriteClickHandler(this.#addToFavoriteClickHandler, movie);
+    this.#moviePopupComponent.setAddToWatchClickHandler(this.#addToWatchClickHandler);
+    this.#moviePopupComponent.setMarkAsWatchedClickHandler(this.#markAsWatchedClickHandler);
+    this.#moviePopupComponent.setAddToFavoriteClickHandler(this.#addToFavoriteClickHandler);
 
     render(this.#siteBodyElement, this.#moviePopupComponent, RenderPosition.AFTER_END);
 
@@ -250,6 +252,10 @@ export default class MoviesBoardPresenter {
     this.#renderSort();
 
     this.#renderMovies(movies.slice(0, Math.min(moviesCount, this.#renderedMoviesCount)));
+
+    if (this.#moviePopupComponent) {
+      this.#renderPopup(this.#lastOpenedMovie, this.#comments);
+    }
 
     if (moviesCount > this.#renderedMoviesCount) {
       this.#renderLoadMoreButton();
