@@ -1,4 +1,4 @@
-import {SortType, UpdateType, UserAction} from '../constants';
+import {FilterType, SortType, UpdateType, UserAction} from '../constants';
 import {remove, render, RenderPosition, replace} from '../utils/render';
 import {sortByYear, sortByRating} from '../utils/movie-utils';
 import MoviesSectionView from '../view/movies-section-view';
@@ -10,12 +10,15 @@ import MovieListContainerView from '../view/movie-list-container-view';
 import MoviesCountView from '../view/movies-count-view';
 import MovieCardView from '../view/movie-card-view';
 import MoviePopupView from '../view/movie-popup-view';
+import {filter} from '../utils/filter';
 
 const MOVIE_COUNT_PER_STEP = 5;
 
 export default class MoviesBoardPresenter {
   #container = null;
   #moviesModel = null;
+  #filterModel = null;
+  #filterType = FilterType.ALL;
   #currentSortType = SortType.DEFAULT;
   #comments = [];
   #moviesComponents = new Map();
@@ -26,7 +29,7 @@ export default class MoviesBoardPresenter {
   #moviesSectionComponent = new MoviesSectionView();
   #movieListComponent = new MovieListView();
   #movieListContainerComponent = new MovieListContainerView();
-  #noMoviesComponent = new NoMoviesView();
+  #noMoviesComponent = null;
   #moviePopupComponent = null;
   #sortComponent = null;
   #loadMoreButtonComponent = null;
@@ -38,22 +41,28 @@ export default class MoviesBoardPresenter {
   #footerStatisticsElement = this.#siteFooterElement.querySelector('.footer__statistics');
 
 
-  constructor(listContainer, moviesModel) {
+  constructor(listContainer, moviesModel, filterModel) {
     this.#container = listContainer;
     this.#moviesModel = moviesModel;
+    this.#filterModel = filterModel;
 
     this.#moviesModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get movies() {
+    this.#filterType = this.#filterModel.filter;
+    const movies = this.#moviesModel.movies;
+    const filteredMovies = filter[this.#filterType](movies);
+
     switch (this.#currentSortType) {
       case SortType.BY_DATE:
-        return [...this.#moviesModel.movies].sort(sortByYear);
+        return filteredMovies.sort(sortByYear);
       case SortType.BY_RATING:
-        return [...this.#moviesModel.movies].sort(sortByRating);
+        return filteredMovies.sort(sortByRating);
     }
 
-    return this.#moviesModel.movies;
+    return filteredMovies;
   }
 
   init = (comments) => {
@@ -68,7 +77,6 @@ export default class MoviesBoardPresenter {
   #handleViewAction = (actionType, updateType, updatedMovie) => {
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
-        this.#lastOpenedMovie = updatedMovie;
         this.#moviesModel.updateMovie(updateType, updatedMovie);
         break;
     }
@@ -81,10 +89,11 @@ export default class MoviesBoardPresenter {
         break;
       case UpdateType.MINOR :
         this.#clearBoard();
+        this.#lastOpenedMovie = data;
         this.#renderBoard();
         break;
       case UpdateType.MAJOR :
-        this.#clearBoard();
+        this.#clearBoard({resetRenderedMoviesCount:true, resetSortType:true});
         this.#renderBoard();
         break;
     }
@@ -212,6 +221,7 @@ export default class MoviesBoardPresenter {
   };
 
   #renderNoMovies = () => {
+    this.#noMoviesComponent = new NoMoviesView(this.#filterType);
     render(this.#movieListComponent, this.#noMoviesComponent, RenderPosition.BEFORE_END);
   }
 
@@ -253,8 +263,8 @@ export default class MoviesBoardPresenter {
 
     this.#renderMovies(movies.slice(0, Math.min(moviesCount, this.#renderedMoviesCount)));
 
-    if (this.#moviePopupComponent) {
-      this.#renderPopup(this.#lastOpenedMovie, this.#comments);
+    if (this.#moviePopupComponent !== null && this.#moviePopupComponent.movieData.id === this.#lastOpenedMovie.id) {
+      this.#moviePopupComponent.updateData(this.#lastOpenedMovie);
     }
 
     if (moviesCount > this.#renderedMoviesCount) {
@@ -272,6 +282,10 @@ export default class MoviesBoardPresenter {
     remove(this.#loadMoreButtonComponent);
     remove(this.#sortComponent);
     remove(this.#moviesCountComponent);
+
+    if (this.#noMoviesComponent) {
+      remove(this.#noMoviesComponent);
+    }
 
     if (resetRenderedMoviesCount) {
       this.#renderedMoviesCount = MOVIE_COUNT_PER_STEP;

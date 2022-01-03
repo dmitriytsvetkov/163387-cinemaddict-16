@@ -16,6 +16,10 @@ export default class MoviePopupView extends SmartView {
     return createMoviePopupTemplate(this._data, this.#comments);
   }
 
+  get movieData() {
+    return this._data;
+  }
+
   setClosePopupClickHandler = (callback) => {
     this._callback.closeClick = callback;
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closePopupClickHandler);
