@@ -1,6 +1,6 @@
 import {FilterType, UpdateType} from '../constants';
 import {filter} from '../utils/filter';
-import SiteMenuView from '../view/site-menu-view';
+import FilterView from '../view/filter-view';
 import {remove, render, RenderPosition, replace} from '../utils/render';
 
 export default class FilterPresenter {
@@ -50,7 +50,7 @@ export default class FilterPresenter {
     const filters = this.filters;
     const prevFilterComponent = this.#filterComponent;
 
-    this.#filterComponent = new SiteMenuView(filters, this.#filterModel.filter);
+    this.#filterComponent = new FilterView(filters, this.#filterModel.filter);
     this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
 
     if (prevFilterComponent === null) {

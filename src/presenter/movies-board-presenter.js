@@ -82,6 +82,14 @@ export default class MoviesBoardPresenter {
     }
   }
 
+  #handleFormSubmit = (update) => {
+    this.#handleViewAction(
+      UserAction.UPDATE_MOVIE,
+      UpdateType.PATCH,
+      update,
+    );
+  }
+
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH :
@@ -163,6 +171,8 @@ export default class MoviesBoardPresenter {
     this.#moviePopupComponent.setAddToWatchClickHandler(this.#addToWatchClickHandler);
     this.#moviePopupComponent.setMarkAsWatchedClickHandler(this.#markAsWatchedClickHandler);
     this.#moviePopupComponent.setAddToFavoriteClickHandler(this.#addToFavoriteClickHandler);
+    this.#moviePopupComponent.setDeleteCommentClickHandler(this.#handleDeleteClick);
+    this.#moviePopupComponent.setFormSubmitClickHandler(this.#handleFormSubmit);
 
     render(this.#siteBodyElement, this.#moviePopupComponent, RenderPosition.AFTER_END);
 
@@ -172,6 +182,16 @@ export default class MoviesBoardPresenter {
       remove(prevMoviePopupComponent);
       this.#popupScrollPosition = null;
     }
+  }
+
+  #handleDeleteClick = (movie) => {
+    const {comments} = movie;
+    comments.splice(0,1);
+    this.#handleViewAction(
+      UserAction.UPDATE_MOVIE,
+      UpdateType.PATCH,
+      {...movie, comments}
+    );
   }
 
   #addToWatchClickHandler = (movie) => {
@@ -245,33 +265,33 @@ export default class MoviesBoardPresenter {
     render(this.#movieListComponent, this.#loadMoreButtonComponent, RenderPosition.BEFORE_END);
   }
 
-  #renderMovieCountStatistic = (moviesCount) => {
+  #renderMovieCount = (moviesCount) => {
     this.#moviesCountComponent = new MoviesCountView(moviesCount);
     render(this.#footerStatisticsElement, this.#moviesCountComponent, RenderPosition.AFTER_END);
   }
 
   #renderBoard = () => {
     const movies = this.movies;
-    const moviesCount = movies.length;
+    const movieCount = movies.length;
 
-    if (moviesCount === 0) {
+    if (movieCount === 0) {
       this.#renderNoMovies();
       return;
     }
 
     this.#renderSort();
 
-    this.#renderMovies(movies.slice(0, Math.min(moviesCount, this.#renderedMoviesCount)));
+    this.#renderMovies(movies.slice(0, Math.min(movieCount, this.#renderedMoviesCount)));
 
     if (this.#moviePopupComponent !== null && this.#moviePopupComponent.movieData.id === this.#lastOpenedMovie.id) {
       this.#moviePopupComponent.updateData(this.#lastOpenedMovie);
     }
 
-    if (moviesCount > this.#renderedMoviesCount) {
+    if (movieCount > this.#renderedMoviesCount) {
       this.#renderLoadMoreButton();
     }
 
-    this.#renderMovieCountStatistic(moviesCount);
+    this.#renderMovieCount(movieCount);
   }
 
   #clearBoard = ({resetRenderedMoviesCount = false, resetSortType = false} = {}) => {

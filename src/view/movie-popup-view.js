@@ -60,11 +60,40 @@ export default class MoviePopupView extends SmartView {
     this._callback.addToFavoriteClick(this._data);
   }
 
+  setDeleteCommentClickHandler = (callback) => {
+    this._callback.deleteCommentsClick = callback;
+    const deleteButtons = this.element.querySelectorAll('.film-details__comment-delete');
+    deleteButtons.forEach((button) => {
+      button.addEventListener('click', this.#commentDeleteHandler);
+    });
+  }
+
+  setFormSubmitClickHandler = (callback) => {
+    this._callback.submitForm = callback;
+    const form = this.element.querySelector('.film-details__inner');
+    form.addEventListener('keydown', this.#formSubmitHandler);
+  }
+
+  #formSubmitHandler = (evt) => {
+    if ((evt.keyCode === 10 || evt.keyCode === 13) && evt.ctrlKey) {
+      this._callback.submitForm(MoviePopupView.parseDataToMovie(this._data, this.#comments));
+    }
+  }
+
   #setInnerHandlers = () => {
     const inputs = this.element.querySelectorAll('.film-details__emoji-item');
     inputs.forEach((input) => {
       input.addEventListener('change', this.#emojiChangeHandler);
     });
+    const newCommentInput = this.element.querySelector('.film-details__comment-input');
+    newCommentInput.addEventListener('change', this.#newCommentChangeHandler);
+  }
+
+  #newCommentChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      newComment: evt.target.value,
+    }, true);
   }
 
   #emojiChangeHandler = (evt) => {
@@ -72,7 +101,11 @@ export default class MoviePopupView extends SmartView {
     this.updateData({
       newEmoji: evt.target.value
     });
+  }
 
+  #commentDeleteHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteCommentsClick(this._data);
   }
 
   restoreHandlers = () => {
@@ -81,14 +114,27 @@ export default class MoviePopupView extends SmartView {
     this.setAddToWatchClickHandler(this._callback.addToWatchlistClick);
     this.setAddToFavoriteClickHandler(this._callback.addToFavoriteClick);
     this.setMarkAsWatchedClickHandler(this._callback.markAsWatchedClick);
+    this.setFormSubmitClickHandler(this._callback.submitForm);
   }
 
-  static parseMovieToData = (movie) => ({...movie, newEmoji: null})
+  static parseMovieToData = (movie) => (
+    {...movie, newEmoji: null, newComment: null}
+  )
 
-  static parseDataToMovie = (data) => {
+  static parseDataToMovie = (data, comments) => {
     const movie = {...data};
+    const commentsCopy = {...comments};
+    const newComment = {
+      id: 123,
+      text: movie.newComment,
+      date: '123',
+      author: 'Dmitriy',
+      emoji: movie.newEmoji,
+    };
+    Object.assign(commentsCopy, newComment); // вот тут застрял, как мне передать комменты в массив комментов, если у меня нет доступа?
 
     delete movie.newEmoji;
+    delete movie.newComment;
     return movie;
   }
 }

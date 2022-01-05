@@ -1,7 +1,7 @@
 import AbstractView from './abstract-view';
 import {createSiteMenuTemplate} from './templates/site-menu-template';
 
-export default class SiteMenuView extends AbstractView {
+export default class FilterView extends AbstractView {
   #filters = null;
   #currentFilter = null;
 
