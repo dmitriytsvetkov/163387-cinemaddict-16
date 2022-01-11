@@ -63,8 +63,13 @@ export default class MoviePopupView extends SmartView {
   setDeleteCommentClickHandler = (callback) => {
     this._callback.deleteCommentsClick = callback;
     const deleteButtons = this.element.querySelectorAll('.film-details__comment-delete');
-    deleteButtons.forEach((button) => {
-      button.addEventListener('click', this.#commentDeleteHandler);
+    deleteButtons.forEach((button, index) => {
+      button.addEventListener('click', (evt) => {
+        evt.preventDefault();
+        console.log(this.#comments)
+        console.log(index)
+        this._callback.deleteCommentsClick(this._data, index);
+      });
     });
   }
 
@@ -86,7 +91,7 @@ export default class MoviePopupView extends SmartView {
       input.addEventListener('change', this.#emojiChangeHandler);
     });
     const newCommentInput = this.element.querySelector('.film-details__comment-input');
-    newCommentInput.addEventListener('change', this.#newCommentChangeHandler);
+    newCommentInput.addEventListener('change', (this.#newCommentChangeHandler));
   }
 
   #newCommentChangeHandler = (evt) => {
@@ -101,11 +106,6 @@ export default class MoviePopupView extends SmartView {
     this.updateData({
       newEmoji: evt.target.value
     });
-  }
-
-  #commentDeleteHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.deleteCommentsClick(this._data);
   }
 
   restoreHandlers = () => {
@@ -124,6 +124,11 @@ export default class MoviePopupView extends SmartView {
   static parseDataToMovie = (data, comments) => {
     const movie = {...data};
     const commentsCopy = {...comments};
+    // есть фильм и есть комменты
+    console.log(movie.newEmoji)
+    console.log(movie.newComment)
+    console.log(movie.comments)
+    console.log(movie.comments.push(22))
     const newComment = {
       id: 123,
       text: movie.newComment,
@@ -131,7 +136,8 @@ export default class MoviePopupView extends SmartView {
       author: 'Dmitriy',
       emoji: movie.newEmoji,
     };
-    Object.assign(commentsCopy, newComment); // вот тут застрял, как мне передать комменты в массив комментов, если у меня нет доступа?
+
+    movie.comments = [];
 
     delete movie.newEmoji;
     delete movie.newComment;
