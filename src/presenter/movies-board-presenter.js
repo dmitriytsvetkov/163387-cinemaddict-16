@@ -185,12 +185,14 @@ export default class MoviesBoardPresenter {
   }
 
   #handleDeleteClick = (movie, index) => {
+    const {comments} = movie;
+    const filteredComments = comments.filter((comment) => comment.toString() !== index);
     movie.comments.splice(index, 1);
-    console.log(movie)
+
     this.#handleViewAction(
       UserAction.UPDATE_MOVIE,
       UpdateType.PATCH,
-      {...movie}
+      {...movie, comments: filteredComments}
     );
   }
 

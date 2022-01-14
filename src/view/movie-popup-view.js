@@ -63,12 +63,10 @@ export default class MoviePopupView extends SmartView {
   setDeleteCommentClickHandler = (callback) => {
     this._callback.deleteCommentsClick = callback;
     const deleteButtons = this.element.querySelectorAll('.film-details__comment-delete');
-    deleteButtons.forEach((button, index) => {
+    deleteButtons.forEach((button) => {
       button.addEventListener('click', (evt) => {
         evt.preventDefault();
-        console.log(this.#comments)
-        console.log(index)
-        this._callback.deleteCommentsClick(this._data, index);
+        this._callback.deleteCommentsClick(this._data, evt.target.id);
       });
     });
   }
@@ -121,21 +119,15 @@ export default class MoviePopupView extends SmartView {
     {...movie, newEmoji: null, newComment: null}
   )
 
-  static parseDataToMovie = (data, comments) => {
+  static parseDataToMovie = (data) => {
     const movie = {...data};
-    const commentsCopy = {...comments};
-    // есть фильм и есть комменты
-    console.log(movie.newEmoji)
-    console.log(movie.newComment)
-    console.log(movie.comments)
-    console.log(movie.comments.push(22))
-    const newComment = {
+    /*const newComment = {
       id: 123,
       text: movie.newComment,
       date: '123',
       author: 'Dmitriy',
       emoji: movie.newEmoji,
-    };
+    };*/
 
     movie.comments = [];
 

@@ -8,7 +8,7 @@ import {POPUP_BUTTON_ACTIVE_CLASS_NAME} from '../../constants';
 
 const createMoviePopupGenreTemplate = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
 
-const createRepeatingCommentTemplate = (comments) => comments.map(({author, date, emoji, text}) => `<li class="film-details__comment">
+const createRepeatingCommentTemplate = (comments) => comments.map(({id, author, date, emoji, text}) => `<li class="film-details__comment">
   <span class="film-details__comment-emoji">
     <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-smile">
   </span>
@@ -17,7 +17,7 @@ const createRepeatingCommentTemplate = (comments) => comments.map(({author, date
     <p class="film-details__comment-info">
       <span class="film-details__comment-author">${author}</span>
       <span class="film-details__comment-day">${getRelativeTime(date)}</span>
-      <button class="film-details__comment-delete">Delete</button>
+      <button class="film-details__comment-delete" id="${id}">Delete</button>
     </p>
   </div>
 </li>`).join('');
