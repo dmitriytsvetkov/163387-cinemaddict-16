@@ -1,10 +1,16 @@
 import AbstractView from './abstract-view';
-import {removeClassFromElementList} from '../utils/common';
 import {createSortTemplate} from './templates/sort-template';
 
 export default class SortView extends AbstractView {
+  #currentSortType = null;
+
+  constructor(currentSortType) {
+    super();
+    this.#currentSortType = currentSortType;
+  }
+
   get template() {
-    return createSortTemplate();
+    return createSortTemplate(this.#currentSortType);
   }
 
   setSortTypeChangeHandler = (callback) => {
@@ -19,7 +25,5 @@ export default class SortView extends AbstractView {
 
     evt.preventDefault();
     this._callback.setSortType(evt.target.dataset.sortType);
-    removeClassFromElementList(this.element.querySelectorAll('.sort__button'), 'sort__button--active');
-    evt.target.classList.add('sort__button--active');
   }
 }

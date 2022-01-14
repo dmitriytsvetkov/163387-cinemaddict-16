@@ -148,6 +148,13 @@ const generateCommentText = () => {
     'Booooooooooring',
     'Very very old. Meh',
     'Almost two hours? Seriously?',
+    'WTF?',
+    'Where is my money?',
+    'QWERTYASD?',
+    'Wes Anderson',
+    'Joon-ho Bong',
+    'The Coen brothers',
+    'Robert Towne',
   ];
 
   return getRandomArrayElement(comments);

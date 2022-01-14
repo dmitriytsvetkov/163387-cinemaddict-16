@@ -8,7 +8,7 @@ import {POPUP_BUTTON_ACTIVE_CLASS_NAME} from '../../constants';
 
 const createMoviePopupGenreTemplate = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
 
-const createRepeatingCommentTemplate = (comments) => comments.map(({author, date, emoji, text}) => `<li class="film-details__comment">
+const createRepeatingCommentTemplate = (comments) => comments.map(({id, author, date, emoji, text}) => `<li class="film-details__comment">
   <span class="film-details__comment-emoji">
     <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-smile">
   </span>
@@ -17,16 +17,16 @@ const createRepeatingCommentTemplate = (comments) => comments.map(({author, date
     <p class="film-details__comment-info">
       <span class="film-details__comment-author">${author}</span>
       <span class="film-details__comment-day">${getRelativeTime(date)}</span>
-      <button class="film-details__comment-delete">Delete</button>
+      <button class="film-details__comment-delete" id="${id}">Delete</button>
     </p>
   </div>
 </li>`).join('');
 
-const createNewCommentTemplate = (newEmoji) => `<div class="film-details__new-comment">
+const createNewCommentTemplate = (newEmoji, newComment) => `<div class="film-details__new-comment">
               <div class="film-details__add-emoji-label">${newEmoji ? `<img src="./images/emoji/${newEmoji}.png" width="55" height="55" alt="emoji">` : ''}</div>
 
               <label class="film-details__comment-label">
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${newComment ? newComment : ''}</textarea>
               </label>
 
               <div class="film-details__emoji-list">
@@ -52,9 +52,9 @@ const createNewCommentTemplate = (newEmoji) => `<div class="film-details__new-co
               </div>
             </div>`;
 
-const createMovieCommentsTemplate = (movieComments, newEmoji) => {
+const createMovieCommentsTemplate = (movieComments, newEmoji, newComment) => {
   const repeatingCommentTemplate = createRepeatingCommentTemplate(movieComments);
-  const newCommentTemplate = createNewCommentTemplate(newEmoji);
+  const newCommentTemplate = createNewCommentTemplate(newEmoji, newComment);
 
   return `<section class="film-details__comments-wrap">
             <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${movieComments.length}</span></h3>
@@ -84,13 +84,14 @@ const createMoviePopupTemplate = (movie, comments) => {
     isFavorite,
     isInWatchlist,
     isWatched,
-    newEmoji
+    newEmoji,
+    newComment
   } = movie;
 
   const movieReleaseYear = getFormattedMovieYear(releaseDate);
   const movieDuration = getFormattedMovieDuration(duration);
   const genresTemplate = createMoviePopupGenreTemplate(genres);
-  const commentsTemplate = createMovieCommentsTemplate(comments, newEmoji);
+  const commentsTemplate = createMovieCommentsTemplate(comments, newEmoji, newComment);
 
   const favoriteClassName = isFavorite ? POPUP_BUTTON_ACTIVE_CLASS_NAME : '';
   const alreadyWatchedClassName = isWatched ? POPUP_BUTTON_ACTIVE_CLASS_NAME : '';
@@ -105,7 +106,6 @@ const createMoviePopupTemplate = (movie, comments) => {
           <div class="film-details__info-wrap">
             <div class="film-details__poster">
               <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
-
               <p class="film-details__age">${ageRating}+</p>
             </div>
 

@@ -33,24 +33,4 @@ const getRandomUniqueArray = (maxValue, length) => {
   return arr;
 };
 
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
-const removeClassFromElementList = (elementList, className) => {
-  elementList.forEach((element) => {
-    element.classList.remove(className);
-  });
-};
-
-export {getRandomArrayElement, getRandomArray, getRandomInteger, getRandomFloat, getRandomUniqueArray, updateItem, removeClassFromElementList};
+export {getRandomArrayElement, getRandomArray, getRandomInteger, getRandomFloat, getRandomUniqueArray};
