@@ -14,6 +14,7 @@ const siteHeaderElement = siteBodyElement.querySelector('.header');
 
 const movies = Array.from({length: MOVIE_COUNT}, generateMovie);
 const moviesModel = new MoviesModel();
+
 moviesModel.movies = movies;
 
 const filterModel = new FilterModel();
@@ -24,9 +25,15 @@ movies.map((movie, index) => {
 });
 
 const moviesBoardPresenter = new MoviesBoardPresenter(siteMainElement, moviesModel, filterModel);
-const filterPresenter = new FilterPresenter(siteMainElement, filterModel, moviesModel);
 
 render(siteHeaderElement, new UserRankView(), RenderPosition.BEFORE_END);
 
 moviesBoardPresenter.init(commentsList);
+
+const handleSiteMenuClick = () => {
+  moviesBoardPresenter.destroy();
+};
+
+const filterPresenter = new FilterPresenter(siteMainElement, filterModel, moviesModel, handleSiteMenuClick);
+
 filterPresenter.init();

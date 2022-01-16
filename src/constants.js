@@ -11,6 +11,7 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  RE_INIT: 'RE_INIT',
 };
 
 const UserAction = {
@@ -18,10 +19,11 @@ const UserAction = {
 };
 
 const FilterType = {
-  ALL: 'all',
-  WATCHLIST: 'watchlist',
-  HISTORY: 'history',
-  FAVORITES: 'favorites',
+  ALL: 'All movies',
+  WATCHLIST: 'Watchlist',
+  HISTORY: 'History',
+  FAVORITES: 'Favorites',
+  STATISTIC: 'Stats',
 };
 
 const ENTER_KEYCODE = 10;

@@ -45,9 +45,6 @@ export default class MoviesBoardPresenter {
     this.#container = listContainer;
     this.#moviesModel = moviesModel;
     this.#filterModel = filterModel;
-
-    this.#moviesModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get movies() {
@@ -68,10 +65,15 @@ export default class MoviesBoardPresenter {
   init = (comments) => {
     this.#comments = [...comments];
 
-    render(this.#container, this.#moviesSectionComponent, RenderPosition.BEFORE_END);
-    render(this.#moviesSectionComponent, this.#movieListComponent, RenderPosition.BEFORE_END);
+    this.#moviesModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
 
     this.#renderBoard();
+  }
+
+  destroy = () => {
+    this.#clearBoard({resetRenderedMoviesCount:true, resetSortType: true});
+
   }
 
   #handleViewAction = (actionType, updateType, updatedMovie) => {
@@ -103,6 +105,9 @@ export default class MoviesBoardPresenter {
       case UpdateType.MAJOR :
         this.#clearBoard({resetRenderedMoviesCount:true, resetSortType:true});
         this.#renderBoard();
+        break;
+      case UpdateType.RE_INIT :
+        this.#clearBoard({resetRenderedMoviesCount:true, resetSortType:true});
         break;
     }
   }
@@ -273,6 +278,8 @@ export default class MoviesBoardPresenter {
   }
 
   #renderBoard = () => {
+    render(this.#container, this.#moviesSectionComponent, RenderPosition.BEFORE_END);
+    render(this.#moviesSectionComponent, this.#movieListComponent, RenderPosition.BEFORE_END);
     const movies = this.movies;
     const movieCount = movies.length;
 
@@ -301,6 +308,9 @@ export default class MoviesBoardPresenter {
 
     this.#moviesComponents.forEach((movie) => remove(movie));
     this.#moviesComponents.clear();
+
+    remove(this.#moviesSectionComponent);
+    remove(this.#movieListComponent);
     remove(this.#loadMoreButtonComponent);
     remove(this.#sortComponent);
     remove(this.#moviesCountComponent);
