@@ -183,7 +183,7 @@ const generateEmoji = () => {
 };
 
 const generateComment = (id) => ({
-  id: id,
+  id: `${id}`,
   text: generateCommentText(),
   date: generateDate(),
   author: generateAuthorName(),

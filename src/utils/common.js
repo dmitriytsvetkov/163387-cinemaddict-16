@@ -33,4 +33,17 @@ const getRandomUniqueArray = (maxValue, length) => {
   return arr;
 };
 
-export {getRandomArrayElement, getRandomArray, getRandomInteger, getRandomFloat, getRandomUniqueArray};
+const removeItem = (items, id) => {
+  const index = items.findIndex((item) => item === id);
+
+  if (index === -1) {
+    return items;
+  }
+
+  return [
+    ...items.slice(0, index),
+    ...items.slice(index + 1),
+  ];
+};
+
+export {getRandomArrayElement, getRandomArray, getRandomInteger, getRandomFloat, getRandomUniqueArray, removeItem};

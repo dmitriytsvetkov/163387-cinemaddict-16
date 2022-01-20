@@ -7,8 +7,28 @@ export default class CommentsModel extends AbstractObservable {
     return this.#comments;
   }
 
-  setComment = (updateType, comments) => {
-    this.#comments = comments;
-    this._notify(updateType, comments);
+  set comments(comments) {
+    this.#comments = [...comments];
+  }
+
+  deleteComment(data) {
+    console.log(this.#comments)
+    const index = this.#comments.findIndex((comment) => comment.id === data.id);
+
+    if (index === -1) {
+      throw new Error('Can\'t delete unexisting comment');
+    }
+
+    this.#comments = [
+      ...this.#comments.slice(0, index),
+      ...this.#comments.slice(index + 1),
+    ];
+  }
+
+  addComment(comment) {
+    this.#comments = [
+      ...this.#comments,
+      comment,
+    ];
   }
 }

@@ -15,7 +15,8 @@ const UpdateType = {
 };
 
 const UserAction = {
-  UPDATE_MOVIE: 'UPDATE_MOVIE'
+  UPDATE_MOVIE: 'UPDATE_MOVIE',
+  DELETE_COMMENT: 'DELETE_COMMENT'
 };
 
 const FilterType = {

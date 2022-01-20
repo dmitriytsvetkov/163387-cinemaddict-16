@@ -5,6 +5,7 @@ import MoviesBoardPresenter from './presenter/movies-board-presenter';
 import MoviesModel from './model/movies-model';
 import FilterModel from './model/filter-model';
 import FilterPresenter from './presenter/filter-presenter';
+import CommentsModel from './model/comments-model';
 
 const MOVIE_COUNT = 11;
 
@@ -24,7 +25,10 @@ movies.map((movie, index) => {
   commentsList.push(generateComment(index));
 });
 
-const moviesBoardPresenter = new MoviesBoardPresenter(siteMainElement, moviesModel, filterModel);
+const commentsModel = new CommentsModel();
+commentsModel.comments = commentsList;
+
+const moviesBoardPresenter = new MoviesBoardPresenter(siteMainElement, moviesModel, filterModel, commentsModel);
 
 render(siteHeaderElement, new UserRankView(), RenderPosition.BEFORE_END);
 
