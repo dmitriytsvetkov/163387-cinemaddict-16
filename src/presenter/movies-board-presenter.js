@@ -71,12 +71,21 @@ export default class MoviesBoardPresenter {
   init = () => {
     this.#moviesModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#commentsModel.addObserver(this.#handleModelEvent);
 
     this.#renderBoard();
   }
 
   destroy = () => {
     this.#clearBoard({resetRenderedMoviesCount:true, resetSortType: true});
+
+    remove(this.#sortComponent);
+
+    this.#moviesModel.removeObserver(this.#handleModelEvent);
+    this.#filterModel.removeObserver(this.#handleModelEvent);
+    this.#commentsModel.removeObserver(this.#handleModelEvent);
+
+    this.#filterModel.setFilter(UpdateType.MAJOR, null);
   }
 
   #handleViewAction = (actionType, updateType, updatedMovie, updatedComment) => {
@@ -85,22 +94,14 @@ export default class MoviesBoardPresenter {
         this.#moviesModel.updateMovie(updateType, updatedMovie);
         break;
       case UserAction.DELETE_COMMENT:
-        console.log(actionType)
-        console.log(updateType)
-        console.log(updatedMovie)
-        console.log(updatedComment)
         this.#commentsModel.deleteComment(updatedComment);
         this.#moviesModel.updateMovie(updateType, updatedMovie);
         break;
+      case UserAction.ADD_COMMENT:
+        this.#commentsModel.addComment(updatedComment);
+        this.#moviesModel.updateMovie(updateType, updatedMovie);
+        break;
     }
-  }
-
-  #handleFormSubmit = (update) => {
-    this.#handleViewAction(
-      UserAction.UPDATE_MOVIE,
-      UpdateType.PATCH,
-      update,
-    );
   }
 
   #handleModelEvent = (updateType, data) => {
@@ -116,9 +117,6 @@ export default class MoviesBoardPresenter {
       case UpdateType.MAJOR :
         this.#clearBoard({resetRenderedMoviesCount:true, resetSortType:true});
         this.#renderBoard();
-        break;
-      case UpdateType.RE_INIT :
-        this.#clearBoard({resetRenderedMoviesCount:true, resetSortType:true});
         break;
     }
   }
@@ -141,7 +139,7 @@ export default class MoviesBoardPresenter {
   #renderSort = () => {
     this.#sortComponent = new SortView(this.#currentSortType);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-    render(this.#container, this.#sortComponent, RenderPosition.AFTER_BEGIN);
+    render(this.#container, this.#sortComponent, RenderPosition.BEFORE_END);
   }
 
   #renderMovieCard = (movie) => {
@@ -185,9 +183,9 @@ export default class MoviesBoardPresenter {
 
   #renderPopup = (movie, allComments) => {
     this.#closePopup();
-    console.log(allComments);
+
     const filteredComments = allComments.filter(({id}) => movie.comments.includes(id));
-    console.log(filteredComments);
+
     this.#moviePopupComponent = new MoviePopupView(movie, filteredComments);
 
     document.addEventListener('keydown', this.#onEscKeyKeyDown);
@@ -203,6 +201,15 @@ export default class MoviesBoardPresenter {
     render(this.#siteBodyElement, this.#moviePopupComponent, RenderPosition.AFTER_END);
 
     this.#moviePopupComponent.element.scrollTop = this.#popupScrollPosition;
+  }
+
+  #handleFormSubmit = ({movie, newComment}) => {
+    this.#handleViewAction(
+      UserAction.ADD_COMMENT,
+      UpdateType.PATCH,
+      {...movie, comments: [...movie.comments, newComment.id]},
+      newComment
+    );
   }
 
   #handleDeleteClick = (movie, index) => {
@@ -282,7 +289,7 @@ export default class MoviesBoardPresenter {
   }
 
   #renderBoard = () => {
-    render(this.#container, this.#moviesSectionComponent, RenderPosition.BEFORE_END);
+    render(this.#container, this.#moviesSectionComponent, RenderPosition.AFTER_END);
     render(this.#moviesSectionComponent, this.#movieListComponent, RenderPosition.BEFORE_END);
     const movies = this.movies;
     const movieCount = movies.length;

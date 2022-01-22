@@ -27,7 +27,7 @@ const getRandomUniqueArray = (maxValue, length) => {
   while(arr.length < length){
     const r = Math.floor(Math.random() * maxValue) + 1;
     if(arr.indexOf(r) === -1) {
-      arr.push(r);
+      arr.push(r.toString());
     }
   }
   return arr;
@@ -46,4 +46,20 @@ const removeItem = (items, id) => {
   ];
 };
 
-export {getRandomArrayElement, getRandomArray, getRandomInteger, getRandomFloat, getRandomUniqueArray, removeItem};
+const makeItemsUniq = (items) => [...new Set(items)];
+
+const getRank = (count) => {
+  if (count <= 10) {
+    return 'Novice';
+  }
+
+  if (count >= 11 && count <= 20) {
+    return 'Fan';
+  }
+
+  if (count >= 21) {
+    return 'Movie buff';
+  }
+};
+
+export {getRandomArrayElement, getRandomArray, getRandomInteger, getRandomFloat, getRandomUniqueArray, removeItem, makeItemsUniq, getRank};

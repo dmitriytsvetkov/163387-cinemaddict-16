@@ -12,7 +12,6 @@ export default class CommentsModel extends AbstractObservable {
   }
 
   deleteComment(data) {
-    console.log(this.#comments)
     const index = this.#comments.findIndex((comment) => comment.id === data.id);
 
     if (index === -1) {
