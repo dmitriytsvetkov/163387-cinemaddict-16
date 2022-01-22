@@ -1,6 +1,7 @@
 import SmartView from './smart-view';
 import {createMoviePopupTemplate} from './templates/movie-popup-template';
 import {ENTER_ALT_KEYCODE, ENTER_KEYCODE} from '../constants';
+import {nanoid} from 'nanoid';
 
 export default class MoviePopupView extends SmartView {
   #comments = null;
@@ -124,18 +125,16 @@ export default class MoviePopupView extends SmartView {
 
   static parseDataToMovie = (data) => {
     const movie = {...data};
-    /*const newComment = {
-      id: 123,
+    const newComment = {
+      id: nanoid(),
       text: movie.newComment,
       date: '123',
       author: 'Dmitriy',
       emoji: movie.newEmoji,
-    };*/
-
-    movie.comments = [];
+    };
 
     delete movie.newEmoji;
     delete movie.newComment;
-    return movie;
+    return {movie, newComment};
   }
 }

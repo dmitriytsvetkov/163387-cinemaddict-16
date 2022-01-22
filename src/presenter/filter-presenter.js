@@ -14,9 +14,6 @@ export default class FilterPresenter {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
     this.#moviesModel = moviesModel;
-
-    this.#moviesModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get filters() {
@@ -25,41 +22,50 @@ export default class FilterPresenter {
     return [
       {
         type: FilterType.ALL,
-        name: 'all',
+        name: 'All movies',
         count: filter[FilterType.ALL](movies).length
       },
       {
         type: FilterType.WATCHLIST,
-        name: 'watchlist',
+        name: 'Watchlist',
         count: filter[FilterType.WATCHLIST](movies).length
       },
       {
         type: FilterType.HISTORY,
-        name: 'history',
+        name: 'History',
         count: filter[FilterType.HISTORY](movies).length
       },
       {
         type: FilterType.FAVORITES,
-        name: 'favorites',
+        name: 'Favorites',
         count: filter[FilterType.FAVORITES](movies).length
       },
     ];
   }
 
   init = () => {
-    const filters = this.filters;
-    const prevFilterComponent = this.#filterComponent;
+    this.#moviesModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
 
+    const filters = this.filters;
+
+    const prevFilterComponent = this.#filterComponent;
     this.#filterComponent = new FilterView(filters, this.#filterModel.filter);
+
     this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
 
     if (prevFilterComponent === null) {
-      render(this.#filterContainer, this.#filterComponent, RenderPosition.BEFORE_BEGIN);
+      render(this.#filterContainer, this.#filterComponent, RenderPosition.AFTER_BEGIN);
       return;
     }
 
     replace(this.#filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
+  }
+
+  destroy = () => {
+    this.#moviesModel.removeObserver(this.#handleModelEvent);
+    this.#filterModel.removeObserver(this.#handleModelEvent);
   }
 
   #handleModelEvent = () => {
@@ -72,5 +78,9 @@ export default class FilterPresenter {
     }
 
     this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
+  }
+
+  setMenuClickHandler = (callback) => {
+    this.#filterComponent.setMenuClickHandler(callback);
   }
 }

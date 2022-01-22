@@ -1,5 +1,6 @@
 import AbstractView from './abstract-view';
-import {createSiteMenuTemplate} from './templates/site-menu-template';
+import {createFilterTemplate} from './templates/filter-template';
+import {MenuItem} from '../constants';
 
 export default class FilterView extends AbstractView {
   #filters = null;
@@ -12,16 +13,33 @@ export default class FilterView extends AbstractView {
   }
 
   get template() {
-    return createSiteMenuTemplate(this.#filters, this.#currentFilter);
+    return createFilterTemplate(this.#filters, this.#currentFilter);
   }
 
   setFilterTypeChangeHandler = (callback) => {
     this._callback.filterTypeChange = callback;
-    this.element.addEventListener('click', this.#filterTypeChangeHandler);
+    this.element.querySelectorAll('[data-name]').forEach((item) => {
+      item.addEventListener('click', this.#filterTypeChangeHandler);
+    });
   }
 
   #filterTypeChangeHandler = (evt) => {
     evt.preventDefault();
-    this._callback.filterTypeChange(evt.target.childNodes[0].textContent);
+    this._callback.filterTypeChange(evt.target.closest('[data-name]').dataset.name);
+  }
+
+  setMenuClickHandler = (callback) => {
+    this._callback.menuClickHandler = callback;
+    this.element.addEventListener('click', this.#menuClickHandler);
+  }
+
+  #menuClickHandler = (evt) => {
+    evt.preventDefault();
+
+    const item = evt.target.closest('.main-navigation__item');
+
+    if (item) {
+      this._callback.menuClickHandler(MenuItem.FILMS);
+    }
   }
 }

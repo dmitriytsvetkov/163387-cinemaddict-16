@@ -11,6 +11,7 @@ import MoviesCountView from '../view/movies-count-view';
 import MovieCardView from '../view/movie-card-view';
 import MoviePopupView from '../view/movie-popup-view';
 import {filter} from '../utils/filter';
+import {removeItem} from '../utils/common';
 
 const MOVIE_COUNT_PER_STEP = 5;
 
@@ -18,9 +19,9 @@ export default class MoviesBoardPresenter {
   #container = null;
   #moviesModel = null;
   #filterModel = null;
+  #commentsModel = null;
   #filterType = FilterType.ALL;
   #currentSortType = SortType.DEFAULT;
-  #comments = [];
   #moviesComponents = new Map();
   #popupScrollPosition = null;
 
@@ -41,13 +42,11 @@ export default class MoviesBoardPresenter {
   #footerStatisticsElement = this.#siteFooterElement.querySelector('.footer__statistics');
 
 
-  constructor(listContainer, moviesModel, filterModel) {
+  constructor(listContainer, moviesModel, filterModel, commentsModel) {
     this.#container = listContainer;
     this.#moviesModel = moviesModel;
     this.#filterModel = filterModel;
-
-    this.#moviesModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#commentsModel = commentsModel;
   }
 
   get movies() {
@@ -65,29 +64,44 @@ export default class MoviesBoardPresenter {
     return filteredMovies;
   }
 
-  init = (comments) => {
-    this.#comments = [...comments];
+  get comments() {
+    return this.#commentsModel.comments;
+  }
 
-    render(this.#container, this.#moviesSectionComponent, RenderPosition.BEFORE_END);
-    render(this.#moviesSectionComponent, this.#movieListComponent, RenderPosition.BEFORE_END);
+  init = () => {
+    this.#moviesModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#commentsModel.addObserver(this.#handleModelEvent);
 
     this.#renderBoard();
   }
 
-  #handleViewAction = (actionType, updateType, updatedMovie) => {
+  destroy = () => {
+    this.#clearBoard({resetRenderedMoviesCount:true, resetSortType: true});
+
+    remove(this.#sortComponent);
+
+    this.#moviesModel.removeObserver(this.#handleModelEvent);
+    this.#filterModel.removeObserver(this.#handleModelEvent);
+    this.#commentsModel.removeObserver(this.#handleModelEvent);
+
+    this.#filterModel.setFilter(UpdateType.MAJOR, null);
+  }
+
+  #handleViewAction = (actionType, updateType, updatedMovie, updatedComment) => {
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
         this.#moviesModel.updateMovie(updateType, updatedMovie);
         break;
+      case UserAction.DELETE_COMMENT:
+        this.#commentsModel.deleteComment(updatedComment);
+        this.#moviesModel.updateMovie(updateType, updatedMovie);
+        break;
+      case UserAction.ADD_COMMENT:
+        this.#commentsModel.addComment(updatedComment);
+        this.#moviesModel.updateMovie(updateType, updatedMovie);
+        break;
     }
-  }
-
-  #handleFormSubmit = (update) => {
-    this.#handleViewAction(
-      UserAction.UPDATE_MOVIE,
-      UpdateType.PATCH,
-      update,
-    );
   }
 
   #handleModelEvent = (updateType, data) => {
@@ -125,7 +139,7 @@ export default class MoviesBoardPresenter {
   #renderSort = () => {
     this.#sortComponent = new SortView(this.#currentSortType);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-    render(this.#container, this.#sortComponent, RenderPosition.AFTER_BEGIN);
+    render(this.#container, this.#sortComponent, RenderPosition.BEFORE_END);
   }
 
   #renderMovieCard = (movie) => {
@@ -136,8 +150,7 @@ export default class MoviesBoardPresenter {
     this.#moviesComponents.set(movie.id, movieCardComponent);
 
     const openPopupClickHandler = () => {
-      this.#siteBodyElement.classList.add('hide-overflow');
-      this.#renderPopup(movie, this.#comments);
+      this.#renderPopup(movie, this.comments);
     };
 
     movieCardComponent.setOpenPopupClickHandler(openPopupClickHandler);
@@ -153,19 +166,30 @@ export default class MoviesBoardPresenter {
 
       if (this.#moviePopupComponent !== null) {
         this.#popupScrollPosition = this.#moviePopupComponent.element.scrollTop;
-        this.#renderPopup(movie, this.#comments);
+        this.#renderPopup(movie, this.comments);
       }
     }
   }
 
+  #closePopup = () => {
+    if (this.#moviePopupComponent !== null) {
+      remove(this.#moviePopupComponent);
+      this.#popupScrollPosition = null;
+    }
+
+    this.#moviePopupComponent = null;
+    this.#siteBodyElement.classList.remove('hide-overflow');
+  };
+
   #renderPopup = (movie, allComments) => {
-    const prevMoviePopupComponent = this.#moviePopupComponent;
+    this.#closePopup();
 
     const filteredComments = allComments.filter(({id}) => movie.comments.includes(id));
 
     this.#moviePopupComponent = new MoviePopupView(movie, filteredComments);
 
     document.addEventListener('keydown', this.#onEscKeyKeyDown);
+    this.#siteBodyElement.classList.add('hide-overflow');
 
     this.#moviePopupComponent.setClosePopupClickHandler(this.#closePopupClickHandler);
     this.#moviePopupComponent.setAddToWatchClickHandler(this.#addToWatchClickHandler);
@@ -177,22 +201,23 @@ export default class MoviesBoardPresenter {
     render(this.#siteBodyElement, this.#moviePopupComponent, RenderPosition.AFTER_END);
 
     this.#moviePopupComponent.element.scrollTop = this.#popupScrollPosition;
+  }
 
-    if (prevMoviePopupComponent !== null) {
-      remove(prevMoviePopupComponent);
-      this.#popupScrollPosition = null;
-    }
+  #handleFormSubmit = ({movie, newComment}) => {
+    this.#handleViewAction(
+      UserAction.ADD_COMMENT,
+      UpdateType.PATCH,
+      {...movie, comments: [...movie.comments, newComment.id]},
+      newComment
+    );
   }
 
   #handleDeleteClick = (movie, index) => {
-    const {comments} = movie;
-    const filteredComments = comments.filter((comment) => comment.toString() !== index);
-    movie.comments.splice(index, 1);
-
     this.#handleViewAction(
-      UserAction.UPDATE_MOVIE,
+      UserAction.DELETE_COMMENT,
       UpdateType.PATCH,
-      {...movie, comments: filteredComments}
+      {...movie, comments: removeItem(movie.comments, movie.id)},
+      {id: index}
     );
   }
 
@@ -223,22 +248,13 @@ export default class MoviesBoardPresenter {
   #onEscKeyKeyDown = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this.#hidePopup();
+      this.#closePopup();
       document.removeEventListener('keydown', this.#onEscKeyKeyDown);
     }
   };
 
-  #hidePopup = () => {
-    if (this.#moviePopupComponent !== null) {
-      remove(this.#moviePopupComponent);
-    }
-
-    this.#moviePopupComponent = null;
-    this.#siteBodyElement.classList.remove('hide-overflow');
-  };
-
   #closePopupClickHandler = () => {
-    this.#hidePopup();
+    this.#closePopup();
     document.removeEventListener('keydown', this.#onEscKeyKeyDown);
   };
 
@@ -273,6 +289,8 @@ export default class MoviesBoardPresenter {
   }
 
   #renderBoard = () => {
+    render(this.#container, this.#moviesSectionComponent, RenderPosition.AFTER_END);
+    render(this.#moviesSectionComponent, this.#movieListComponent, RenderPosition.BEFORE_END);
     const movies = this.movies;
     const movieCount = movies.length;
 
@@ -301,6 +319,9 @@ export default class MoviesBoardPresenter {
 
     this.#moviesComponents.forEach((movie) => remove(movie));
     this.#moviesComponents.clear();
+
+    remove(this.#moviesSectionComponent);
+    remove(this.#movieListComponent);
     remove(this.#loadMoreButtonComponent);
     remove(this.#sortComponent);
     remove(this.#moviesCountComponent);

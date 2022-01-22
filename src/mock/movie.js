@@ -140,6 +140,7 @@ const generateMovie = () => ({
   isInWatchlist: Boolean(getRandomInteger()),
   isFavorite: Boolean(getRandomInteger()),
   isWatched: Boolean(getRandomInteger()),
+  watchedDate: '2022-01-12T16:12:32.554Z',
 });
 
 const generateCommentText = () => {
@@ -183,7 +184,7 @@ const generateEmoji = () => {
 };
 
 const generateComment = (id) => ({
-  id: id,
+  id: `${id}`,
   text: generateCommentText(),
   date: generateDate(),
   author: generateAuthorName(),
