@@ -34,7 +34,7 @@ const createMovieCardTemplate = (movie) => {
         <span class="film-card__duration">${formattedDuration}</span>
         <span class="film-card__genre">${genres[0]}</span>
       </p>
-      <img src="./images/posters/${poster}" alt="" class="film-card__poster">
+      <img src="/${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${trimmedDescription ?? description}</p>
       <span class="film-card__comments">${comments.length} comments</span>
     </a>

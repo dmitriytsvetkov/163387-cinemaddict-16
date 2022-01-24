@@ -12,6 +12,7 @@ import MovieCardView from '../view/movie-card-view';
 import MoviePopupView from '../view/movie-popup-view';
 import {filter} from '../utils/filter';
 import {removeItem} from '../utils/common';
+import LoadingView from '../view/loading-view';
 
 const MOVIE_COUNT_PER_STEP = 5;
 
@@ -30,12 +31,14 @@ export default class MoviesBoardPresenter {
   #moviesSectionComponent = new MoviesSectionView();
   #movieListComponent = new MovieListView();
   #movieListContainerComponent = new MovieListContainerView();
+  #loadingComponent = new LoadingView();
   #noMoviesComponent = null;
   #moviePopupComponent = null;
   #sortComponent = null;
   #loadMoreButtonComponent = null;
   #moviesCountComponent = null;
   #lastOpenedMovie = null;
+  #isLoading = true;
 
   #siteBodyElement = document.querySelector('body');
   #siteFooterElement = this.#siteBodyElement.querySelector('.footer');
@@ -79,7 +82,9 @@ export default class MoviesBoardPresenter {
   destroy = () => {
     this.#clearBoard({resetRenderedMoviesCount:true, resetSortType: true});
 
-    remove(this.#sortComponent);
+    if (this.#sortComponent) {
+      remove(this.#sortComponent);
+    }
 
     this.#moviesModel.removeObserver(this.#handleModelEvent);
     this.#filterModel.removeObserver(this.#handleModelEvent);
@@ -118,6 +123,14 @@ export default class MoviesBoardPresenter {
         this.#clearBoard({resetRenderedMoviesCount:true, resetSortType:true});
         this.#renderBoard();
         break;
+      case UpdateType.INIT :
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
+        break;
+      case UpdateType.COMMENTS_INIT:
+        this.#moviePopupComponent.updateComments(this.comments);
+        break;
     }
   }
 
@@ -136,10 +149,14 @@ export default class MoviesBoardPresenter {
     movies.forEach((movie) => this.#renderMovieCard(movie));
   }
 
+  #renderLoading = () => {
+    render(this.#movieListComponent, this.#loadingComponent, RenderPosition.BEFORE_END);
+  }
+
   #renderSort = () => {
     this.#sortComponent = new SortView(this.#currentSortType);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-    render(this.#container, this.#sortComponent, RenderPosition.BEFORE_END);
+    render(this.#container, this.#sortComponent, RenderPosition.AFTER_END);
   }
 
   #renderMovieCard = (movie) => {
@@ -181,12 +198,12 @@ export default class MoviesBoardPresenter {
     this.#siteBodyElement.classList.remove('hide-overflow');
   };
 
-  #renderPopup = (movie, allComments) => {
+  #renderPopup = (movie) => {
     this.#closePopup();
 
-    const filteredComments = allComments.filter(({id}) => movie.comments.includes(id));
+    this.#commentsModel.getComments(movie.id);
 
-    this.#moviePopupComponent = new MoviePopupView(movie, filteredComments);
+    this.#moviePopupComponent = new MoviePopupView(movie, this.comments);
 
     document.addEventListener('keydown', this.#onEscKeyKeyDown);
     this.#siteBodyElement.classList.add('hide-overflow');
@@ -291,6 +308,12 @@ export default class MoviesBoardPresenter {
   #renderBoard = () => {
     render(this.#container, this.#moviesSectionComponent, RenderPosition.AFTER_END);
     render(this.#moviesSectionComponent, this.#movieListComponent, RenderPosition.BEFORE_END);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const movies = this.movies;
     const movieCount = movies.length;
 
@@ -320,11 +343,25 @@ export default class MoviesBoardPresenter {
     this.#moviesComponents.forEach((movie) => remove(movie));
     this.#moviesComponents.clear();
 
-    remove(this.#moviesSectionComponent);
-    remove(this.#movieListComponent);
-    remove(this.#loadMoreButtonComponent);
-    remove(this.#sortComponent);
-    remove(this.#moviesCountComponent);
+    if (this.#moviesSectionComponent) {
+      remove(this.#moviesSectionComponent);
+    }
+
+    if (this.#movieListComponent) {
+      remove(this.#movieListComponent);
+    }
+
+    if (this.#loadMoreButtonComponent) {
+      remove(this.#loadMoreButtonComponent);
+    }
+
+    if (this.#sortComponent) {
+      remove(this.#sortComponent);
+    }
+
+    if (this.#moviesCountComponent) {
+      remove(this.#moviesCountComponent);
+    }
 
     if (this.#noMoviesComponent) {
       remove(this.#noMoviesComponent);
