@@ -11,6 +11,8 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
+  COMMENTS_INIT: 'COMMENTS_INIT',
 };
 
 const UserAction = {

@@ -1,6 +1,5 @@
 import {remove, render, RenderPosition} from './utils/render';
 import UserRankView from './view/user-rank-view';
-import {generateMovie, generateComment} from './mock/movie';
 import MoviesBoardPresenter from './presenter/movies-board-presenter';
 import MoviesModel from './model/movies-model';
 import FilterModel from './model/filter-model';
@@ -10,8 +9,12 @@ import {MenuItem} from './constants';
 import StatisticView from './view/statistic-view';
 import StatsTriggerView from './view/stats-trigger-view';
 import SiteMenuView from './view/site-menu-view';
+import ApiService from './api-service';
 
-const MOVIE_COUNT = 11;
+const AUTHORIZATION = 'Basic qwertyasdzxc123321';
+const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict';
+
+const apiService = new ApiService(END_POINT, AUTHORIZATION);
 
 const siteBodyElement = document.querySelector('body');
 const siteMainElement = siteBodyElement.querySelector('.main');
@@ -21,33 +24,21 @@ const statsTriggerComponent = new StatsTriggerView();
 
 const siteMenuComponent = new SiteMenuView();
 
-const movies = Array.from({length: MOVIE_COUNT}, generateMovie);
-const moviesModel = new MoviesModel();
-
-moviesModel.movies = movies;
+const moviesModel = new MoviesModel(apiService);
 
 const filterModel = new FilterModel();
 
-const commentsList = [];
-movies.map((movie, index) => {
-  commentsList.push(generateComment(index));
-});
-
-const commentsModel = new CommentsModel();
-commentsModel.comments = commentsList;
+const commentsModel = new CommentsModel(apiService);
 
 const moviesBoardPresenter = new MoviesBoardPresenter(siteMainElement, moviesModel, filterModel, commentsModel);
 
 const filterPresenter = new FilterPresenter(siteMenuComponent, filterModel, moviesModel);
 
-render(siteHeaderElement, new UserRankView(), RenderPosition.BEFORE_END);
-render(siteMainElement, siteMenuComponent, RenderPosition.BEFORE_END);
-render(siteMenuComponent, statsTriggerComponent, RenderPosition.BEFORE_END);
-
-moviesBoardPresenter.init(commentsList);
-
+moviesBoardPresenter.init();
 filterPresenter.init();
+
 let statisticComponent = null;
+
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.FILMS:
@@ -65,4 +56,9 @@ const handleSiteMenuClick = (menuItem) => {
   }
 };
 
-statsTriggerComponent.setMenuClickHandler(handleSiteMenuClick);
+moviesModel.init().finally(() => {
+  render(siteHeaderElement, new UserRankView(), RenderPosition.BEFORE_END);
+  render(siteMainElement, siteMenuComponent, RenderPosition.BEFORE_END);
+  render(siteMenuComponent, statsTriggerComponent, RenderPosition.BEFORE_END);
+  statsTriggerComponent.setMenuClickHandler(handleSiteMenuClick);
+});
