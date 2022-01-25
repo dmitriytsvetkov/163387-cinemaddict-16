@@ -1,4 +1,4 @@
-import {FilterType, SortType, UpdateType, UserAction} from '../constants';
+import {FilterType, SortType, State, UpdateType, UserAction} from '../constants';
 import {remove, render, RenderPosition, replace} from '../utils/render';
 import {sortByYear, sortByRating} from '../utils/movie-utils';
 import MoviesSectionView from '../view/movies-section-view';
@@ -93,18 +93,30 @@ export default class MoviesBoardPresenter {
     this.#filterModel.setFilter(UpdateType.MAJOR, null);
   }
 
-  #handleViewAction = (actionType, updateType, updatedMovie, updatedComment) => {
+  #handleViewAction = async (actionType, updateType, updatedMovie, updatedComment) => {
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
         this.#moviesModel.updateMovie(updateType, updatedMovie);
         break;
       case UserAction.DELETE_COMMENT:
-        this.#commentsModel.deleteComment(updatedComment);
-        this.#moviesModel.updateMovie(updateType, updatedMovie);
+        this.setPopupState(State.DELETING, updatedComment.id);
+
+        try {
+          await this.#commentsModel.deleteComment(updatedComment);
+          await this.#moviesModel.updateMovie(updateType, updatedMovie);
+        } catch(err) {
+          this.setPopupState(State.ABORTING, updatedComment.id);
+        }
         break;
       case UserAction.ADD_COMMENT:
-        this.#commentsModel.addComment(updatedComment);
-        this.#moviesModel.updateMovie(updateType, updatedMovie);
+        this.setPopupState(State.SAVING);
+
+        try {
+          await this.#commentsModel.addComment(updatedComment, updatedMovie);
+          await this.#moviesModel.updateMovie(updateType, updatedMovie);
+        } catch(err) {
+          this.setPopupState(State.ABORTING, updatedComment.id);
+        }
         break;
     }
   }
@@ -117,6 +129,9 @@ export default class MoviesBoardPresenter {
       case UpdateType.MINOR :
         this.#clearBoard();
         this.#lastOpenedMovie = data;
+        if (this.#moviePopupComponent) {
+          this.#renderPopup(data);
+        }
         this.#renderBoard();
         break;
       case UpdateType.MAJOR :
@@ -130,6 +145,22 @@ export default class MoviesBoardPresenter {
         break;
       case UpdateType.COMMENTS_INIT:
         this.#moviePopupComponent.updateComments(this.comments);
+        break;
+    }
+  }
+
+  setPopupState(state, id) {
+    switch (state) {
+      case State.SAVING:
+        this.#moviePopupComponent.updateData({
+          isSaving: true,
+        });
+        break;
+      case State.DELETING:
+        this.#moviePopupComponent.updateData({
+          isDeleting: true,
+          deletingCommentId: id
+        });
         break;
     }
   }
@@ -199,7 +230,9 @@ export default class MoviesBoardPresenter {
   };
 
   #renderPopup = (movie) => {
-    this.#closePopup();
+    if (this.#moviePopupComponent) {
+      this.#closePopup();
+    }
 
     this.#commentsModel.getComments(movie.id);
 
@@ -232,7 +265,7 @@ export default class MoviesBoardPresenter {
   #handleDeleteClick = (movie, index) => {
     this.#handleViewAction(
       UserAction.DELETE_COMMENT,
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       {...movie, comments: removeItem(movie.comments, movie.id)},
       {id: index}
     );

@@ -1,7 +1,6 @@
 import SmartView from './smart-view';
 import {createMoviePopupTemplate} from './templates/movie-popup-template';
 import {ENTER_ALT_KEYCODE, ENTER_KEYCODE} from '../constants';
-import {nanoid} from 'nanoid';
 
 export default class MoviePopupView extends SmartView {
   #comments = null;
@@ -84,6 +83,7 @@ export default class MoviePopupView extends SmartView {
 
   #formSubmitHandler = (evt) => {
     if ((evt.keyCode === ENTER_KEYCODE || evt.keyCode === ENTER_ALT_KEYCODE) && evt.ctrlKey) {
+      evt.preventDefault();
       this._callback.submitForm(MoviePopupView.parseDataToMovie(this._data, this.#comments));
     }
   }
@@ -112,7 +112,8 @@ export default class MoviePopupView extends SmartView {
   #emojiChangeHandler = (evt) => {
     evt.preventDefault();
     this.updateData({
-      newEmoji: evt.target.value
+      newEmoji: evt.target.value,
+      newComment: this.element.querySelector('.film-details__comment-input').value,
     });
   }
 
@@ -123,6 +124,7 @@ export default class MoviePopupView extends SmartView {
     this.setAddToFavoriteClickHandler(this._callback.addToFavoriteClick);
     this.setMarkAsWatchedClickHandler(this._callback.markAsWatchedClick);
     this.setFormSubmitClickHandler(this._callback.submitForm);
+    this.setDeleteCommentClickHandler(this._callback.deleteCommentsClick);
   }
 
   static parseMovieToData = (movie) => (
@@ -132,15 +134,13 @@ export default class MoviePopupView extends SmartView {
   static parseDataToMovie = (data) => {
     const movie = {...data};
     const newComment = {
-      id: nanoid(),
       text: movie.newComment,
-      date: '123',
-      author: 'Dmitriy',
       emoji: movie.newEmoji,
     };
 
     delete movie.newEmoji;
     delete movie.newComment;
+
     return {movie, newComment};
   }
 }

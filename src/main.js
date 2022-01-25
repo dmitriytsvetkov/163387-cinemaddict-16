@@ -41,7 +41,7 @@ let statisticComponent = null;
 
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
-    case MenuItem.FILMS:
+    case MenuItem.MOVIES:
       remove(statisticComponent);
       moviesBoardPresenter.init();
       filterPresenter.init();

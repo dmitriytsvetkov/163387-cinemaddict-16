@@ -1,6 +1,8 @@
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  DELETE: 'DELETE',
+  POST: 'POST'
 };
 
 export default class ApiService {
@@ -36,9 +38,25 @@ export default class ApiService {
 
   updateMovie = async (movie) => {
     const response = await this.#load({
-      url: `/movies/${movie.id}`,
+      url: `movies/${movie.id}`,
       method: Method.PUT,
-      body: JSON.stringify(this.adaptToServer(movie)),
+      body: JSON.stringify(this.adaptMovieToServer(movie)),
+      headers: new Headers({'Content-Type': 'application/json'})
+    });
+
+    return await ApiService.parseResponse(response);
+  }
+
+  deleteComment = async (comment) => await this.#load({
+    url: `/comments/${comment}`,
+    method: Method.DELETE,
+  })
+
+  addComment = async (comment, movie) => {
+    const response = await this.#load({
+      url: `comments/${movie.id}`,
+      method: Method.POST,
+      body: JSON.stringify(this.adaptCommentToServer(comment)),
       headers: new Headers({'Content-Type': 'application/json'})
     });
 
@@ -57,7 +75,7 @@ export default class ApiService {
     throw err;
   }
 
-  adaptToServer = (movie) => {
+  adaptMovieToServer = (movie) => {
     const adaptedMovie = {
       ...movie,
       // eslint-disable-next-line camelcase
@@ -113,4 +131,17 @@ export default class ApiService {
 
     return adaptedMovie;
   }
+
+  adaptCommentToServer = (comment) => {
+    const adaptedComment = {
+      ...comment,
+      comment: comment.text,
+      emotion: comment.emoji,
+    };
+
+    delete adaptedComment.text;
+    delete adaptedComment.emoji;
+
+    return adaptedComment;
+  };
 }
