@@ -56,7 +56,7 @@ export default class ApiService {
     const response = await this.#load({
       url: `comments/${movie.id}`,
       method: Method.POST,
-      body: JSON.stringify(this.adaptCommentToServer(comment)),
+      body: JSON.stringify(comment),
       headers: new Headers({'Content-Type': 'application/json'})
     });
 
@@ -131,17 +131,4 @@ export default class ApiService {
 
     return adaptedMovie;
   }
-
-  adaptCommentToServer = (comment) => {
-    const adaptedComment = {
-      ...comment,
-      comment: comment.text,
-      emotion: comment.emoji,
-    };
-
-    delete adaptedComment.text;
-    delete adaptedComment.emoji;
-
-    return adaptedComment;
-  };
 }

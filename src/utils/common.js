@@ -13,8 +13,8 @@ const removeItem = (items, id) => {
 
 const makeItemsUniq = (items) => [...new Set(items)];
 
-const getRank = (count) => {
-  if (count <= 10) {
+const getUserRank = (count) => {
+  if (count > 0 && count <= 10) {
     return 'Novice';
   }
 
@@ -25,6 +25,8 @@ const getRank = (count) => {
   if (count >= 21) {
     return 'Movie buff';
   }
+
+  return '';
 };
 
-export {removeItem, makeItemsUniq, getRank};
+export {removeItem, makeItemsUniq, getUserRank};

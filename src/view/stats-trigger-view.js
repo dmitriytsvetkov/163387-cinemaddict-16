@@ -1,9 +1,7 @@
 import SmartView from './smart-view';
 import {MenuItem} from '../constants';
 
-const createSiteMenuTemplate = (isActive) => (
-  `<a href="#stats" class="main-navigation__additional${isActive ? ' main-navigation__additional--active' : ''}">Stats</a>`
-);
+const createSiteMenuTemplate = (isActive) => `<a href="#stats" class="main-navigation__additional${isActive ? ' main-navigation__additional--active' : ''}">Stats</a>`;
 
 export default class StatsTriggerView extends SmartView {
   constructor() {
@@ -13,7 +11,7 @@ export default class StatsTriggerView extends SmartView {
     };
   }
 
-  restoreHandlers() {
+  restoreHandlers = () => {
     this.setMenuClickHandler(this._callback.menuClick);
   }
 

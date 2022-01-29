@@ -7,12 +7,12 @@ import NoMoviesView from '../view/no-movies-view';
 import LoadMoreButtonView from '../view/load-more-button-view';
 import SortView from '../view/sort-view';
 import MovieListContainerView from '../view/movie-list-container-view';
-import MoviesCountView from '../view/movies-count-view';
 import MovieCardView from '../view/movie-card-view';
 import MoviePopupView from '../view/movie-popup-view';
 import {filter} from '../utils/filter';
 import {removeItem} from '../utils/common';
 import LoadingView from '../view/loading-view';
+import UserRankView from '../view/user-rank-view';
 
 const MOVIE_COUNT_PER_STEP = 5;
 
@@ -21,10 +21,10 @@ export default class MoviesBoardPresenter {
   #moviesModel = null;
   #filterModel = null;
   #commentsModel = null;
+  #popupScrollPosition = null;
   #filterType = FilterType.ALL;
   #currentSortType = SortType.DEFAULT;
   #moviesComponents = new Map();
-  #popupScrollPosition = null;
 
   #renderedMoviesCount = MOVIE_COUNT_PER_STEP;
 
@@ -34,16 +34,14 @@ export default class MoviesBoardPresenter {
   #loadingComponent = new LoadingView();
   #noMoviesComponent = null;
   #moviePopupComponent = null;
+  #profileComponent = null;
   #sortComponent = null;
   #loadMoreButtonComponent = null;
   #moviesCountComponent = null;
-  #lastOpenedMovie = null;
   #isLoading = true;
 
   #siteBodyElement = document.querySelector('body');
-  #siteFooterElement = this.#siteBodyElement.querySelector('.footer');
-  #footerStatisticsElement = this.#siteFooterElement.querySelector('.footer__statistics');
-
+  #siteHeaderElement = this.#siteBodyElement.querySelector('.header');
 
   constructor(listContainer, moviesModel, filterModel, commentsModel) {
     this.#container = listContainer;
@@ -115,7 +113,7 @@ export default class MoviesBoardPresenter {
           await this.#commentsModel.addComment(updatedComment, updatedMovie);
           await this.#moviesModel.updateMovie(updateType, updatedMovie);
         } catch(err) {
-          this.setPopupState(State.ABORTING, updatedComment.id);
+          this.setPopupState(State.ABORTING);
         }
         break;
     }
@@ -125,14 +123,23 @@ export default class MoviesBoardPresenter {
     switch (updateType) {
       case UpdateType.PATCH :
         this.#renderMovieCard(data);
+        this.#moviePopupComponent.restorePrevScroll(this.#popupScrollPosition);
         break;
       case UpdateType.MINOR :
         this.#clearBoard();
-        this.#lastOpenedMovie = data;
+        this.#renderBoard();
+
         if (this.#moviePopupComponent) {
           this.#renderPopup(data);
+          this.#moviePopupComponent.restorePrevScroll(this.#popupScrollPosition);
         }
-        this.#renderBoard();
+
+        if (this.#profileComponent) {
+          remove(this.#profileComponent);
+          this.#profileComponent = new UserRankView(filter[FilterType.HISTORY](this.#moviesModel.movies).length);
+          render(this.#siteHeaderElement, this.#profileComponent, RenderPosition.BEFORE_END);
+        }
+
         break;
       case UpdateType.MAJOR :
         this.#clearBoard({resetRenderedMoviesCount:true, resetSortType:true});
@@ -142,6 +149,8 @@ export default class MoviesBoardPresenter {
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.#renderBoard();
+        this.#profileComponent = new UserRankView(filter[FilterType.HISTORY](this.movies).length);
+        render(this.#siteHeaderElement, this.#profileComponent, RenderPosition.BEFORE_END);
         break;
       case UpdateType.COMMENTS_INIT:
         this.#moviePopupComponent.updateComments(this.comments);
@@ -161,6 +170,9 @@ export default class MoviesBoardPresenter {
           isDeleting: true,
           deletingCommentId: id
         });
+        break;
+      case State.ABORTING:
+        this.#moviePopupComponent.shakeComment(id);
         break;
     }
   }
@@ -213,7 +225,6 @@ export default class MoviesBoardPresenter {
       remove(prevMovieCardComponent);
 
       if (this.#moviePopupComponent !== null) {
-        this.#popupScrollPosition = this.#moviePopupComponent.element.scrollTop;
         this.#renderPopup(movie, this.comments);
       }
     }
@@ -222,7 +233,6 @@ export default class MoviesBoardPresenter {
   #closePopup = () => {
     if (this.#moviePopupComponent !== null) {
       remove(this.#moviePopupComponent);
-      this.#popupScrollPosition = null;
     }
 
     this.#moviePopupComponent = null;
@@ -249,26 +259,32 @@ export default class MoviesBoardPresenter {
     this.#moviePopupComponent.setFormSubmitClickHandler(this.#handleFormSubmit);
 
     render(this.#siteBodyElement, this.#moviePopupComponent, RenderPosition.AFTER_END);
-
-    this.#moviePopupComponent.element.scrollTop = this.#popupScrollPosition;
   }
 
   #handleFormSubmit = ({movie, newComment}) => {
     this.#handleViewAction(
       UserAction.ADD_COMMENT,
       UpdateType.PATCH,
-      {...movie, comments: [...movie.comments, newComment.id]},
+      movie,
       newComment
     );
+
+    if (this.#moviePopupComponent) {
+      this.#popupScrollPosition = this.#moviePopupComponent.element.scrollTop;
+    }
   }
 
   #handleDeleteClick = (movie, index) => {
     this.#handleViewAction(
       UserAction.DELETE_COMMENT,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       {...movie, comments: removeItem(movie.comments, movie.id)},
       {id: index}
     );
+
+    if (this.#moviePopupComponent) {
+      this.#popupScrollPosition = this.#moviePopupComponent.element.scrollTop;
+    }
   }
 
   #addToWatchClickHandler = (movie) => {
@@ -277,6 +293,10 @@ export default class MoviesBoardPresenter {
       UpdateType.MINOR,
       {...movie, isInWatchlist: !movie.isInWatchlist},
     );
+
+    if (this.#moviePopupComponent) {
+      this.#popupScrollPosition = this.#moviePopupComponent.element.scrollTop;
+    }
   };
 
   #markAsWatchedClickHandler = (movie) => {
@@ -285,6 +305,10 @@ export default class MoviesBoardPresenter {
       UpdateType.MINOR,
       {...movie, isWatched: !movie.isWatched},
     );
+
+    if (this.#moviePopupComponent) {
+      this.#popupScrollPosition = this.#moviePopupComponent.element.scrollTop;
+    }
   };
 
   #addToFavoriteClickHandler = (movie) => {
@@ -293,6 +317,11 @@ export default class MoviesBoardPresenter {
       UpdateType.MINOR,
       {...movie, isFavorite: !movie.isFavorite},
     );
+
+    if (this.#moviePopupComponent) {
+      this.#popupScrollPosition = this.#moviePopupComponent.element.scrollTop;
+    }
+
   };
 
   #onEscKeyKeyDown = (evt) => {
@@ -333,10 +362,6 @@ export default class MoviesBoardPresenter {
     render(this.#movieListComponent, this.#loadMoreButtonComponent, RenderPosition.BEFORE_END);
   }
 
-  #renderMovieCount = (moviesCount) => {
-    this.#moviesCountComponent = new MoviesCountView(moviesCount);
-    render(this.#footerStatisticsElement, this.#moviesCountComponent, RenderPosition.AFTER_END);
-  }
 
   #renderBoard = () => {
     render(this.#container, this.#moviesSectionComponent, RenderPosition.AFTER_END);
@@ -359,15 +384,9 @@ export default class MoviesBoardPresenter {
 
     this.#renderMovies(movies.slice(0, Math.min(movieCount, this.#renderedMoviesCount)));
 
-    if (this.#moviePopupComponent !== null && this.#moviePopupComponent.movieData.id === this.#lastOpenedMovie.id) {
-      this.#moviePopupComponent.updateData(this.#lastOpenedMovie);
-    }
-
     if (movieCount > this.#renderedMoviesCount) {
       this.#renderLoadMoreButton();
     }
-
-    this.#renderMovieCount(movieCount);
   }
 
   #clearBoard = ({resetRenderedMoviesCount = false, resetSortType = false} = {}) => {
