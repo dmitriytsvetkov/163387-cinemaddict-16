@@ -39,7 +39,7 @@ export default class FilterView extends AbstractView {
     const item = evt.target.closest('.main-navigation__item');
 
     if (item) {
-      this._callback.menuClickHandler(MenuItem.FILMS);
+      this._callback.menuClickHandler(MenuItem.MOVIES);
     }
   }
 }

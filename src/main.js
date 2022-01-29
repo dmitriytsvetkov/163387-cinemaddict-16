@@ -1,5 +1,4 @@
 import {remove, render, RenderPosition} from './utils/render';
-import UserRankView from './view/user-rank-view';
 import MoviesBoardPresenter from './presenter/movies-board-presenter';
 import MoviesModel from './model/movies-model';
 import FilterModel from './model/filter-model';
@@ -10,6 +9,7 @@ import StatisticView from './view/statistic-view';
 import StatsTriggerView from './view/stats-trigger-view';
 import SiteMenuView from './view/site-menu-view';
 import ApiService from './api-service';
+import MoviesCountView from './view/movies-count-view';
 
 const AUTHORIZATION = 'Basic qwertyasdzxc123321';
 const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict';
@@ -18,7 +18,8 @@ const apiService = new ApiService(END_POINT, AUTHORIZATION);
 
 const siteBodyElement = document.querySelector('body');
 const siteMainElement = siteBodyElement.querySelector('.main');
-const siteHeaderElement = siteBodyElement.querySelector('.header');
+const siteFooterElement = siteBodyElement.querySelector('.footer');
+const footerStatisticsElement = siteFooterElement.querySelector('.footer__statistics');
 
 const statsTriggerComponent = new StatsTriggerView();
 
@@ -41,7 +42,8 @@ let statisticComponent = null;
 
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
-    case MenuItem.FILMS:
+    case MenuItem.MOVIES:
+      statsTriggerComponent.updateData({active: false});
       remove(statisticComponent);
       moviesBoardPresenter.init();
       filterPresenter.init();
@@ -52,13 +54,15 @@ const handleSiteMenuClick = (menuItem) => {
       statisticComponent = new StatisticView(moviesModel.movies);
       render(siteMainElement, statisticComponent, RenderPosition.BEFORE_END);
       filterPresenter.setMenuClickHandler(handleSiteMenuClick);
+      statsTriggerComponent.updateData({active: true});
       break;
   }
 };
 
 moviesModel.init().finally(() => {
-  render(siteHeaderElement, new UserRankView(), RenderPosition.BEFORE_END);
   render(siteMainElement, siteMenuComponent, RenderPosition.BEFORE_END);
   render(siteMenuComponent, statsTriggerComponent, RenderPosition.BEFORE_END);
+  const moviesCountComponent = new MoviesCountView(moviesModel.movies.length);
+  render(footerStatisticsElement, moviesCountComponent, RenderPosition.AFTER_END);
   statsTriggerComponent.setMenuClickHandler(handleSiteMenuClick);
 });

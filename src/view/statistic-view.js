@@ -6,7 +6,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {FilterType} from '../constants.js';
 import {filter} from '../utils/filter.js';
 import {makeItemsUniq} from '../utils/common';
-import {getRank} from '../utils/common.js';
+import {getUserRank} from '../utils/common.js';
 
 dayjs.extend(isBetween);
 
@@ -58,7 +58,7 @@ const createStatisticsTemplate = ({cardsData, dateFrom, dateTo, currentFilter}) 
     <p class="statistic__rank">
       Your rank
       <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-      <span class="statistic__rank-label">${getRank(watchedCardsCount)}</span>
+      <span class="statistic__rank-label">${getUserRank(watchedCardsCount)}</span>
     </p>
 
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">

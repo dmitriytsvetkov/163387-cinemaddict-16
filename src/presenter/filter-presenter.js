@@ -23,7 +23,6 @@ export default class FilterPresenter {
       {
         type: FilterType.ALL,
         name: 'All movies',
-        count: filter[FilterType.ALL](movies).length
       },
       {
         type: FilterType.WATCHLIST,

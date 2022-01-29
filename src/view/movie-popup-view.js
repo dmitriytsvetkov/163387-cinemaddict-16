@@ -1,10 +1,10 @@
 import SmartView from './smart-view';
 import {createMoviePopupTemplate} from './templates/movie-popup-template';
 import {ENTER_ALT_KEYCODE, ENTER_KEYCODE} from '../constants';
-import {nanoid} from 'nanoid';
 
 export default class MoviePopupView extends SmartView {
   #comments = null;
+  #userComment = '';
 
   constructor(movie, comments) {
     super();
@@ -18,8 +18,8 @@ export default class MoviePopupView extends SmartView {
     return createMoviePopupTemplate(this._data, this.#comments);
   }
 
-  get movieData() {
-    return this._data;
+  restorePrevScroll = (prevScroll) => {
+    this.element.scrollTo(0, prevScroll);
   }
 
   updateComments(comments) {
@@ -84,6 +84,7 @@ export default class MoviePopupView extends SmartView {
 
   #formSubmitHandler = (evt) => {
     if ((evt.keyCode === ENTER_KEYCODE || evt.keyCode === ENTER_ALT_KEYCODE) && evt.ctrlKey) {
+      evt.preventDefault();
       this._callback.submitForm(MoviePopupView.parseDataToMovie(this._data, this.#comments));
     }
   }
@@ -94,12 +95,12 @@ export default class MoviePopupView extends SmartView {
   }
 
   #setInnerHandlers = () => {
-    const inputs = this.element.querySelectorAll('.film-details__emoji-item');
-    inputs.forEach((input) => {
+    const emojiInputs = this.element.querySelectorAll('.film-details__emoji-item');
+    emojiInputs.forEach((input) => {
       input.addEventListener('change', this.#emojiChangeHandler);
     });
     const newCommentInput = this.element.querySelector('.film-details__comment-input');
-    newCommentInput.addEventListener('change', (this.#newCommentChangeHandler));
+    newCommentInput.addEventListener('input', (this.#newCommentChangeHandler));
   }
 
   #newCommentChangeHandler = (evt) => {
@@ -112,7 +113,8 @@ export default class MoviePopupView extends SmartView {
   #emojiChangeHandler = (evt) => {
     evt.preventDefault();
     this.updateData({
-      newEmoji: evt.target.value
+      newEmoji: evt.target.value,
+      newComment: this.#userComment ? this.#userComment : this._data.newComment,
     });
   }
 
@@ -123,24 +125,42 @@ export default class MoviePopupView extends SmartView {
     this.setAddToFavoriteClickHandler(this._callback.addToFavoriteClick);
     this.setMarkAsWatchedClickHandler(this._callback.markAsWatchedClick);
     this.setFormSubmitClickHandler(this._callback.submitForm);
+    this.setDeleteCommentClickHandler(this._callback.deleteCommentsClick);
   }
 
-  static parseMovieToData = (movie) => (
-    {...movie, newEmoji: null, newComment: null}
-  )
+  shakeComment(id) {
+    if (id) {
+      this.shake(this.element.querySelector(`.film-details__comment[data-id="${id}"]`), () => {
+        this.updateData({
+          isDeleting: false,
+          deletingCommentId: null
+        });
+      });
+    } else {
+      this.shake(this.element, () => {
+        this.updateData({
+          isSaving: false
+        });
+      });
+    }
+  }
+
+  static parseMovieToData = (movie) => ({
+    ...movie, newEmoji: null,
+    newComment: '',
+    isDeleting: false
+  })
 
   static parseDataToMovie = (data) => {
     const movie = {...data};
     const newComment = {
-      id: nanoid(),
-      text: movie.newComment,
-      date: '123',
-      author: 'Dmitriy',
-      emoji: movie.newEmoji,
+      comment: movie.newComment,
+      emotion: movie.newEmoji,
     };
 
     delete movie.newEmoji;
     delete movie.newComment;
+
     return {movie, newComment};
   }
 }

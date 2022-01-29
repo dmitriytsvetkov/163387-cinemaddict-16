@@ -34,6 +34,19 @@ const createElement = (template) => {
   return newElement.firstChild;
 };
 
+const remove = (component) => {
+  if (remove === null) {
+    return;
+  }
+
+  if (!(component instanceof AbstractView)) {
+    throw new Error('Can remove only components');
+  }
+
+  component.element.remove();
+  component.removeElement();
+};
+
 const replace = (newElement, oldElement) => {
   if (newElement === null || oldElement === null) {
     throw new Error('Can\'t replace non-existing elements');
@@ -49,19 +62,6 @@ const replace = (newElement, oldElement) => {
   }
 
   parent.replaceChild(newChild, oldChild);
-};
-
-const remove = (component) => {
-  if (remove === null) {
-    return;
-  }
-
-  if (!(component instanceof AbstractView)) {
-    throw new Error('Can remove only components');
-  }
-
-  component.element.remove();
-  component.removeElement();
 };
 
 export {RenderPosition, createElement, render, remove, replace};

@@ -1,6 +1,6 @@
 const createSiteMenuNavigationTemplate = (filter, currentFilterType) => {
   const {type, name, count} = filter;
-  return `<a href="#${name}" data-name="${name}" class="main-navigation__item ${type === currentFilterType ? 'main-navigation__item--active' : ''}">${name}<span class="main-navigation__item-count">${count}</span></a>`;
+  return `<a href="#${name}" data-name="${name}" class="main-navigation__item ${type === currentFilterType ? 'main-navigation__item--active' : ''}">${name}${count ? `<span class="main-navigation__item-count">${count}</span>`: ''}</a>`;
 };
 
 const createFilterTemplate = (filterItems, currentFilterType) => {
