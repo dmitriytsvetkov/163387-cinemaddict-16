@@ -53,7 +53,7 @@ const getChartData = (cardsData, dateFrom, dateTo) => {
 
   const genresData = uniqGenres.map((uniqGenre) => ({
     genre: uniqGenre,
-    count: genres.filter((genre) => genre === uniqGenre).length
+    count: genres.filter((genre) => genre === uniqGenre).length,
   }));
 
   const cardsByGenrecounts = genresData.map((item) => item.count);
@@ -63,7 +63,7 @@ const getChartData = (cardsData, dateFrom, dateTo) => {
     uniqGenres,
     cardsByGenrecounts,
     genresData,
-    watchedCardsCount: filteredCards.length
+    watchedCardsCount: filteredCards.length,
   };
 };
 
