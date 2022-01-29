@@ -89,7 +89,7 @@ const createMoviePopupTemplate = (movie, comments) => {
     newComment,
     isDeleting,
     isSaving,
-    deletingCommentId
+    deletingCommentId,
   } = movie;
 
   const movieReleaseYear = getFormattedMovieYear(releaseDate);

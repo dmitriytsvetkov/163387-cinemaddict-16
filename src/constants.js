@@ -37,7 +37,7 @@ const MenuItem = {
 const State = {
   SAVING: 'SAVING',
   DELETING: 'DELETING',
-  ABORTING: 'ABORTING'
+  ABORTING: 'ABORTING',
 };
 
 const FILTER_TYPES = {
