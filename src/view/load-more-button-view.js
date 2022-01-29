@@ -1,6 +1,5 @@
 import AbstractView from './abstract-view';
-
-const createLoadMoreButtonTemplate = () => '<button class="films-list__show-more">Show more</button>';
+import {createLoadMoreButtonTemplate} from './templates/load-more-button-template';
 
 export default class LoadMoreButtonView extends AbstractView {
   get template() {

@@ -1,9 +1,6 @@
 import AbstractView from './abstract-view';
 import {MenuItem} from '../constants';
-
-const createSiteMenuTemplate = () => (
-  '<nav class="main-navigation"></nav>'
-);
+import {createSiteMenuTemplate} from './templates/site-menu-template';
 
 export default class SiteMenuView extends AbstractView {
   get template() {

@@ -1,6 +1,5 @@
 import AbstractView from './abstract-view';
-
-const createMoviesCountTemplate = (moviesCount) => `<p>${moviesCount} movies inside</p>`;
+import {createMoviesCountTemplate} from './templates/movie-count-template';
 
 export default class MoviesCountView extends AbstractView {
   #moviesCount = null;

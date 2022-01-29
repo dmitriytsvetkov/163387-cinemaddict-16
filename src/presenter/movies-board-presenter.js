@@ -6,13 +6,13 @@ import MovieListView from '../view/movie-list-view';
 import NoMoviesView from '../view/no-movies-view';
 import LoadMoreButtonView from '../view/load-more-button-view';
 import SortView from '../view/sort-view';
-import MovieListContainerView from '../view/movie-list-container-view';
 import MovieCardView from '../view/movie-card-view';
 import MoviePopupView from '../view/movie-popup-view';
 import {filter} from '../utils/filter';
 import {removeItem} from '../utils/common';
 import LoadingView from '../view/loading-view';
 import UserRankView from '../view/user-rank-view';
+import MovieListContainerView from '../view/movie-list-container-view';
 
 const MOVIE_COUNT_PER_STEP = 5;
 
