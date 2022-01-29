@@ -6,7 +6,7 @@ import FilterPresenter from './presenter/filter-presenter';
 import CommentsModel from './model/comments-model';
 import {MenuItem} from './constants';
 import StatisticView from './view/statistic-view';
-import StatsTriggerView from './view/stats-trigger-view';
+import StatsMenuItem from './view/stats-menu-item';
 import SiteMenuView from './view/site-menu-view';
 import ApiService from './api-service';
 import MoviesCountView from './view/movies-count-view';
@@ -21,7 +21,7 @@ const siteMainElement = siteBodyElement.querySelector('.main');
 const siteFooterElement = siteBodyElement.querySelector('.footer');
 const footerStatisticsElement = siteFooterElement.querySelector('.footer__statistics');
 
-const statsTriggerComponent = new StatsTriggerView();
+const statsTriggerComponent = new StatsMenuItem();
 
 const siteMenuComponent = new SiteMenuView();
 

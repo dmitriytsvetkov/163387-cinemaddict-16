@@ -4,6 +4,7 @@ import {
   getRelativeTime,
   isGenresMultiple
 } from '../../utils/movie-utils';
+import he from 'he';
 import {POPUP_BUTTON_ACTIVE_CLASS_NAME} from '../../constants';
 
 const createMoviePopupGenreTemplate = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
@@ -13,7 +14,7 @@ const createRepeatingCommentTemplate = (comments, isDeleting, deletingCommentId)
     <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
   </span>
   <div>
-    <p class="film-details__comment-text">${comment}</p>
+    <p class="film-details__comment-text">${he.encode(comment)}</p>
     <p class="film-details__comment-info">
       <span class="film-details__comment-author">${author}</span>
       <span class="film-details__comment-day">${getRelativeTime(date)}</span>
