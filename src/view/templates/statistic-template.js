@@ -2,7 +2,7 @@ import {getUserRank} from '../../utils/common';
 import {getChartData} from '../../utils/movie-utils';
 import {FILTER_TYPES} from '../../constants';
 
-const createStatisticsTemplate = ({cardsData, dateFrom, dateTo, currentFilter}) => {
+const createStatisticTemplate = ({cardsData, dateFrom, dateTo, currentFilter}) => {
   const {moviesInRange, genresData, watchedMoviesCount} = getChartData(cardsData, dateFrom, dateTo);
 
   const length = moviesInRange.length;
@@ -61,5 +61,5 @@ const createStatisticsTemplate = ({cardsData, dateFrom, dateTo, currentFilter}) 
   </section>`;
 };
 
-export {createStatisticsTemplate};
+export {createStatisticTemplate};
 
