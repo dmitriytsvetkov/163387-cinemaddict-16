@@ -3,10 +3,10 @@ import {getChartData} from '../../utils/movie-utils';
 import {FILTER_TYPES} from '../../constants';
 
 const createStatisticsTemplate = ({cardsData, dateFrom, dateTo, currentFilter}) => {
-  const {cardsInRange, genresData, watchedCardsCount} = getChartData(cardsData, dateFrom, dateTo);
+  const {moviesInRange, genresData, watchedMoviesCount} = getChartData(cardsData, dateFrom, dateTo);
 
-  const length = cardsInRange.length;
-  const totalDuration = cardsInRange.reduce((acc, card) => acc + card.duration, 0);
+  const length = moviesInRange.length;
+  const totalDuration = moviesInRange.reduce((acc, card) => acc + card.duration, 0);
 
   const hours = Math.floor(totalDuration / 60);
   const minutes = totalDuration - hours * 60;
@@ -16,7 +16,7 @@ const createStatisticsTemplate = ({cardsData, dateFrom, dateTo, currentFilter}) 
     <p class="statistic__rank">
       Your rank
       <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-      <span class="statistic__rank-label">${getUserRank(watchedCardsCount)}</span>
+      <span class="statistic__rank-label">${getUserRank(watchedMoviesCount)}</span>
     </p>
 
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">

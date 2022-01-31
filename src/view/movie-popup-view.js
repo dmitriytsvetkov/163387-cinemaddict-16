@@ -1,6 +1,6 @@
 import SmartView from './smart-view';
 import {createMoviePopupTemplate} from './templates/movie-popup-template';
-import {ENTER_ALT_KEYCODE, ENTER_KEYCODE} from '../constants';
+import {KEYCODES} from '../constants';
 
 export default class MoviePopupView extends SmartView {
   #comments = null;
@@ -83,7 +83,7 @@ export default class MoviePopupView extends SmartView {
   }
 
   #formSubmitHandler = (evt) => {
-    if ((evt.keyCode === ENTER_KEYCODE || evt.keyCode === ENTER_ALT_KEYCODE) && evt.ctrlKey) {
+    if ((evt.keyCode === KEYCODES.ENTER || evt.keyCode === KEYCODES.ENTER_ALT) && evt.ctrlKey) {
       evt.preventDefault();
       this._callback.submitForm(MoviePopupView.parseDataToMovie(this._data, this.#comments));
     }

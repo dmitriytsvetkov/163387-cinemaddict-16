@@ -48,10 +48,34 @@ const FILTER_TYPES = {
   YEAR: 'year',
 };
 
-const ENTER_KEYCODE = 10;
+const KEYCODES = {
+  ENTER: 10,
+  ENTER_ALT: 13,
+  ESCAPE: 'Escape',
+  ESCAPE_ALT: 'Esc'
+};
 
-const ENTER_ALT_KEYCODE = 13;
+const DAYS_SHORTCUTS = {
+  ONE_DAY: 1,
+  WEEK: 7,
+  MONTH: 31,
+  YEAR: 366,
+};
+
+const NoMoviesTextType = {
+  [FilterType.ALL] : 'There are no movies in our database',
+  [FilterType.WATCHLIST] : 'There are no movies to watch now',
+  [FilterType.HISTORY] : 'There are no watched movies now',
+  [FilterType.FAVORITES] : 'There are no favorite movies now',
+};
 
 const MAX_SHORT_DESCRIPTION_LENGTH = 140;
 
-export {State, POPUP_BUTTON_ACTIVE_CLASS_NAME, CARD_BUTTON_ACTIVE_CLASS_NAME, SortType, MAX_SHORT_DESCRIPTION_LENGTH, UpdateType, UserAction, FilterType, ENTER_KEYCODE, ENTER_ALT_KEYCODE, MenuItem, FILTER_TYPES};
+const ApiMethod = {
+  GET: 'GET',
+  PUT: 'PUT',
+  DELETE: 'DELETE',
+  POST: 'POST'
+};
+
+export {ApiMethod, NoMoviesTextType, State, POPUP_BUTTON_ACTIVE_CLASS_NAME, CARD_BUTTON_ACTIVE_CLASS_NAME, SortType, MAX_SHORT_DESCRIPTION_LENGTH, UpdateType, UserAction, FilterType, KEYCODES, MenuItem, FILTER_TYPES, DAYS_SHORTCUTS};
