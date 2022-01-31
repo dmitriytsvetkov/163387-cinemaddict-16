@@ -1,9 +1,4 @@
-const Method = {
-  GET: 'GET',
-  PUT: 'PUT',
-  DELETE: 'DELETE',
-  POST: 'POST'
-};
+import {ApiMethod} from './constants';
 
 export default class ApiService {
   #endPoint = null;
@@ -20,7 +15,7 @@ export default class ApiService {
 
   getComments = async (id) => this.#load({url: `comments/${id}`}).then(ApiService.parseResponse)
 
-  #load = async ({url, method = Method.GET, body = null, headers = new Headers()}) => {
+  #load = async ({url, method = ApiMethod.GET, body = null, headers = new Headers()}) => {
     headers.append('Authorization', this.#authorization);
 
     const response = await fetch(
@@ -39,7 +34,7 @@ export default class ApiService {
   updateMovie = async (movie) => {
     const response = await this.#load({
       url: `movies/${movie.id}`,
-      method: Method.PUT,
+      method: ApiMethod.PUT,
       body: JSON.stringify(this.adaptMovieToServer(movie)),
       headers: new Headers({'Content-Type': 'application/json'})
     });
@@ -49,13 +44,13 @@ export default class ApiService {
 
   deleteComment = async (comment) => await this.#load({
     url: `/comments/${comment}`,
-    method: Method.DELETE,
+    method: ApiMethod.DELETE,
   })
 
   addComment = async (comment, movie) => {
     const response = await this.#load({
       url: `comments/${movie.id}`,
-      method: Method.POST,
+      method: ApiMethod.POST,
       body: JSON.stringify(comment),
       headers: new Headers({'Content-Type': 'application/json'})
     });

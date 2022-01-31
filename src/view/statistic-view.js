@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import SmartView from './smart-view.js';
 import {createStatisticsTemplate} from './templates/statistic-template';
-import {FILTER_TYPES} from '../constants';
+import {DAYS_SHORTCUTS, FILTER_TYPES} from '../constants';
 import {renderChart} from '../utils/movie-utils';
 
 export default class StatisticsView extends SmartView {
@@ -29,12 +29,11 @@ export default class StatisticsView extends SmartView {
   }
 
   setFiltersHandler() {
-    this.element.querySelectorAll('.statistic__filters-input').forEach((input) => input.addEventListener('change', this._filterHandle));
+    this.element.querySelectorAll('.statistic__filters-input').forEach((input) => input.addEventListener('change', this.#filterHandler));
   }
 
-  _filterHandle = (evt) => {
+  #filterHandler = (evt) => {
     evt.preventDefault();
-
 
     switch (evt.target.value) {
       case FILTER_TYPES.ALL:
@@ -46,29 +45,29 @@ export default class StatisticsView extends SmartView {
         break;
       case FILTER_TYPES.TODAY:
         this.updateData({
-          dateFrom: dayjs().subtract(1, 'day').toDate(),
-          dateTo: dayjs().add(1, 'day').toDate(),
+          dateFrom: dayjs().subtract(DAYS_SHORTCUTS.ONE_DAY, 'day').toDate(),
+          dateTo: dayjs().add(DAYS_SHORTCUTS.ONE_DAY, 'day').toDate(),
           currentFilter: FILTER_TYPES.TODAY
         });
         break;
       case FILTER_TYPES.WEEK:
         this.updateData({
-          dateFrom: dayjs().subtract(7, 'day').toDate(),
-          dateTo: dayjs().add(1, 'day').toDate(),
+          dateFrom: dayjs().subtract(DAYS_SHORTCUTS.WEEK, 'day').toDate(),
+          dateTo: dayjs().add(DAYS_SHORTCUTS.ONE_DAY, 'day').toDate(),
           currentFilter: FILTER_TYPES.WEEK
         });
         break;
       case FILTER_TYPES.MONTH:
         this.updateData({
-          dateFrom: dayjs().subtract(31, 'day').toDate(),
-          dateTo: dayjs().add(1, 'day').toDate(),
+          dateFrom: dayjs().subtract(DAYS_SHORTCUTS.MONTH, 'day').toDate(),
+          dateTo: dayjs().add(DAYS_SHORTCUTS.ONE_DAY, 'day').toDate(),
           currentFilter: FILTER_TYPES.MONTH
         });
         break;
       case FILTER_TYPES.YEAR:
         this.updateData({
-          dateFrom: dayjs().subtract(366, 'day').toDate(),
-          dateTo: dayjs().add(1, 'day').toDate(),
+          dateFrom: dayjs().subtract(DAYS_SHORTCUTS.YEAR, 'day').toDate(),
+          dateTo: dayjs().add(DAYS_SHORTCUTS.ONE_DAY, 'day').toDate(),
           currentFilter: FILTER_TYPES.YEAR
         });
         break;

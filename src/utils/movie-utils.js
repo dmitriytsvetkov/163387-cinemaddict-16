@@ -10,6 +10,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
+dayjs.extend(isBetween);
 
 const getFormattedMovieDate = (date, formatString) => dayjs(date).format(formatString);
 
@@ -39,16 +40,13 @@ const trimDescription = (description, maxDescriptionLength) => {
 
 const sortByRating = (movieA, movieB) => movieB.rating - movieA.rating;
 
-dayjs.extend(isBetween);
+const getChartData = (moviesData, dateFrom, dateTo) => {
+  const filteredMovies = filter[FilterType.HISTORY](moviesData);
+  const moviesInRange = (dateFrom && dateTo) ?
+    filteredMovies.filter((card) => dayjs(card.watchedDate).isBetween(dateFrom, dateTo)) :
+    filteredMovies;
 
-
-const getChartData = (cardsData, dateFrom, dateTo) => {
-  const filteredCards = filter[FilterType.HISTORY](cardsData);
-  const cardsInRange = (dateFrom && dateTo) ?
-    filteredCards.filter((card) => dayjs(card.watchedDate).isBetween(dateFrom, dateTo)) :
-    filteredCards;
-
-  const genres = cardsInRange.map((card) => [...card.genres]).flat();
+  const genres = moviesInRange.map((card) => [...card.genres]).flat();
   const uniqGenres = makeItemsUniq(genres);
 
   const genresData = uniqGenres.map((uniqGenre) => ({
@@ -56,22 +54,21 @@ const getChartData = (cardsData, dateFrom, dateTo) => {
     count: genres.filter((genre) => genre === uniqGenre).length,
   }));
 
-  const cardsByGenrecounts = genresData.map((item) => item.count);
+  const moviesByGenreCount = genresData.map((item) => item.count);
 
   return {
-    cardsInRange,
+    moviesInRange,
     uniqGenres,
-    cardsByGenrecounts,
+    moviesByGenreCount,
     genresData,
-    watchedCardsCount: filteredCards.length,
+    watchedMoviesCount: filteredMovies.length,
   };
 };
 
 const renderChart = (ctx, cardsData, dateFrom, dateTo) => {
   const BAR_HEIGHT = 50;
-  const {uniqGenres, cardsByGenrecounts} = getChartData(cardsData, dateFrom, dateTo);
+  const {uniqGenres, moviesByGenreCount} = getChartData(cardsData, dateFrom, dateTo);
 
-  // Обязательно рассчитайте высоту canvas, она зависит от количества элементов диаграммы
   ctx.height = BAR_HEIGHT * uniqGenres.length;
 
   return new Chart(ctx, {
@@ -80,7 +77,7 @@ const renderChart = (ctx, cardsData, dateFrom, dateTo) => {
     data: {
       labels: uniqGenres,
       datasets: [{
-        data: cardsByGenrecounts,
+        data: moviesByGenreCount,
         backgroundColor: '#ffe800',
         hoverBackgroundColor: '#ffe800',
         anchor: 'start',

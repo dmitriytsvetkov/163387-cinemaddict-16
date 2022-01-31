@@ -1,6 +1,6 @@
 import {
+  getFormattedMovieDate,
   getFormattedMovieDuration,
-  getFormattedMovieYear,
   getRelativeTime,
   isGenresMultiple
 } from '../../utils/movie-utils';
@@ -92,7 +92,7 @@ const createMoviePopupTemplate = (movie, comments) => {
     deletingCommentId,
   } = movie;
 
-  const movieReleaseYear = getFormattedMovieYear(releaseDate);
+  const movieReleaseYear = getFormattedMovieDate(releaseDate, 'DD MMMM YYYY');
   const movieDuration = getFormattedMovieDuration(duration);
   const genresTemplate = createMoviePopupGenreTemplate(genres);
   const commentsTemplate = createMovieCommentsTemplate(comments, newEmoji, newComment, isDeleting, deletingCommentId, isSaving);

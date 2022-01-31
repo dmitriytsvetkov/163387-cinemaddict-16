@@ -1,4 +1,4 @@
-import {FilterType, SortType, State, UpdateType, UserAction} from '../constants';
+import {FilterType, KEYCODES, SortType, State, UpdateType, UserAction} from '../constants';
 import {remove, render, RenderPosition, replace} from '../utils/render';
 import {sortByYear, sortByRating} from '../utils/movie-utils';
 import MoviesSectionView from '../view/movies-section-view';
@@ -325,7 +325,7 @@ export default class MoviesBoardPresenter {
   };
 
   #onEscKeyKeyDown = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
+    if (evt.key === KEYCODES.ESCAPE || evt.key === KEYCODES.ESCAPE_ALT) {
       evt.preventDefault();
       this.#closePopup();
       document.removeEventListener('keydown', this.#onEscKeyKeyDown);
