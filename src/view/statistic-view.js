@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
 import SmartView from './smart-view.js';
-import {createStatisticsTemplate} from './templates/statistic-template';
+import {createStatisticTemplate} from './templates/statistic-template';
 import {DAYS_SHORTCUTS, FILTER_TYPES} from '../constants';
 import {renderChart} from '../utils/movie-utils';
 
-export default class StatisticsView extends SmartView {
+export default class StatisticView extends SmartView {
   #chart = null;
 
   constructor(cardsData) {
@@ -21,7 +21,7 @@ export default class StatisticsView extends SmartView {
   }
 
   get template() {
-    return createStatisticsTemplate(this._data);
+    return createStatisticTemplate(this._data);
   }
 
   restoreHandlers = () => {
