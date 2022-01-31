@@ -52,7 +52,7 @@ const KEYCODES = {
   ENTER: 10,
   ENTER_ALT: 13,
   ESCAPE: 'Escape',
-  ESCAPE_ALT: 'Esc'
+  ESCAPE_ALT: 'Esc',
 };
 
 const DAYS_SHORTCUTS = {
@@ -75,7 +75,7 @@ const ApiMethod = {
   GET: 'GET',
   PUT: 'PUT',
   DELETE: 'DELETE',
-  POST: 'POST'
+  POST: 'POST',
 };
 
 export {ApiMethod, NoMoviesTextType, State, POPUP_BUTTON_ACTIVE_CLASS_NAME, CARD_BUTTON_ACTIVE_CLASS_NAME, SortType, MAX_SHORT_DESCRIPTION_LENGTH, UpdateType, UserAction, FilterType, KEYCODES, MenuItem, FILTER_TYPES, DAYS_SHORTCUTS};
